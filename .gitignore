@@ -37,3 +37,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 *.env
+
+# Database (заявки — не храним в репозитории)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+*.log

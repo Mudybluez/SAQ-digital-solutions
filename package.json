@@ -6,7 +6,9 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "tg:chatid": "node server/tg.js chatid",
+    "tg:test": "node server/tg.js test"
   },
   "engines": {
     "node": ">=18"
