@@ -254,9 +254,9 @@ header.nav.solid {
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand .logo-mark {
-  height: 36px;
+  height: 54px;
   width: auto;
-  margin-right: 8px;
+  margin-right: 12px;
   align-self: center;
   transition: transform 0.4s var(--ease);
   object-fit: contain;
