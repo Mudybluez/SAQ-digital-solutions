@@ -261,6 +261,9 @@ header.nav.solid {
   transition: transform 0.4s var(--ease);
   object-fit: contain;
 }
+.brand .logo-light { display: none; }
+body.light-theme .brand .logo-dark { display: none; }
+body.light-theme .brand .logo-light { display: block; }
 .brand:hover .logo-mark {
   transform: translateX(4px);
 }
@@ -334,6 +337,10 @@ header.nav.solid {
   position: absolute; inset: 0; z-index: 0;
   background: url("../assets/hero-archer.png") center right / cover no-repeat;
   opacity: 0.42;
+}
+body.light-theme #hero .hero-bg {
+  background-image: url("../assets/saq_digital_hero_light_01.png");
+  opacity: 0.28;
 }
 #hero .hero-bg::after {
   content: ""; position: absolute; inset: 0;
@@ -740,6 +747,14 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
 /* ============================================================
    REDUCED MOTION
    ============================================================ */
+/* Theme transition animation */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, fill 0.5s ease, stroke 0.5s ease, box-shadow 0.5s ease !important;
+}
+
 /* Temporarily disabled reduced-motion override to force animations
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

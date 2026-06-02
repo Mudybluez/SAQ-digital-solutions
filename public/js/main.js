@@ -54,10 +54,19 @@
     const toggle = document.getElementById("themeToggle");
     if (!toggle) return;
     toggle.addEventListener("click", () => {
+      document.documentElement.classList.add("theme-transition");
+      document.body.classList.add("theme-transition");
+      
       const isLight = document.body.classList.toggle("light-theme");
       document.documentElement.classList.toggle("light-theme", isLight);
       localStorage.setItem("theme", isLight ? "light" : "dark");
+      
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+      
+      setTimeout(() => {
+        document.documentElement.classList.remove("theme-transition");
+        document.body.classList.remove("theme-transition");
+      }, 500);
     });
   }
 
