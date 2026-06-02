@@ -266,7 +266,14 @@ header.nav.solid {
 .brand { white-space: nowrap; }
 .brand .saq { font-weight: 900; font-size: 1.5rem; letter-spacing: -0.04em; color: var(--gold); }
 .brand .ds { color: var(--text2); font-weight: 400; font-size: 0.95rem; letter-spacing: 0.02em; white-space: nowrap; }
-.nav-links { display: flex; align-items: center; gap: 38px; }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 .nav-links a {
   font-size: 0.92rem; color: var(--text2); letter-spacing: 0.01em; position: relative;
   transition: color 0.25s var(--ease); padding: 4px 0;
