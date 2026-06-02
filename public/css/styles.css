@@ -252,13 +252,14 @@ header.nav.solid {
   padding: 16px 0;
 }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
-.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 10px; }
 .brand .logo-mark {
-  width: 22px;
-  height: 22px;
-  margin-right: 2px;
+  height: 28px;
+  width: auto;
+  margin-right: 4px;
   align-self: center;
   transition: transform 0.4s var(--ease);
+  object-fit: contain;
 }
 .brand:hover .logo-mark {
   transform: translateX(4px);
