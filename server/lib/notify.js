@@ -28,11 +28,15 @@ async function notifyTelegram(text) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return false;
+  const payload = { chat_id: chatId, text, disable_web_page_preview: true };
+  // Если группа с темами (Topics) — пишем в конкретную тему.
+  const topicId = process.env.TELEGRAM_TOPIC_ID;
+  if (topicId) payload.message_thread_id = Number(topicId);
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) console.error("[notify] Telegram error:", await res.text());
     return res.ok;

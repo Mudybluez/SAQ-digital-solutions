@@ -18,7 +18,7 @@ Desktop.ini
 *.njsproj
 *.sln.docstates
 
-# Node/npm dependency directories (for future web dev assets)
+# Node/npm dependency directories
 node_modules/
 jspm_packages/
 web_modules/
@@ -37,3 +37,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 *.env
+
+# Database (заявки — не храним в репозитории)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+*.log
