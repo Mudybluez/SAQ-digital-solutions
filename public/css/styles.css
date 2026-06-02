@@ -652,6 +652,7 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
 /* ============================================================
    REDUCED MOTION
    ============================================================ */
+/* Temporarily disabled reduced-motion override to force animations
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
@@ -660,3 +661,4 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
   body.loading { overflow: auto; height: auto; }
   .hero-rule { width: 100% !important; }
 }
+*/

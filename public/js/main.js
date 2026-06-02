@@ -4,7 +4,7 @@
    ============================================================ */
 (function () {
   "use strict";
-  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const REDUCED = false;
   const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
