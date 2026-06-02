@@ -7,7 +7,7 @@
 #case-hero { min-height: 78vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 150px; }
 #case-hero .hero-bg {
   position: absolute; inset: 0; z-index: 0;
-  background: url("../assets/hero-archer.jpg") center right / cover no-repeat;
+  background: url("../assets/hero-archer.png") center right / cover no-repeat;
   opacity: 0.20;
 }
 #case-hero .hero-bg::after {

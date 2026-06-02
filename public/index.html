@@ -10,6 +10,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=3" />
+<script>
+  (function () {
+    const t = localStorage.getItem("theme");
+    if (t === "light" || (!t && window.matchMedia("(prefers-color-scheme: light)").matches)) {
+      document.documentElement.classList.add("light-theme");
+      document.addEventListener("DOMContentLoaded", () => document.body.classList.add("light-theme"));
+    }
+  })();
+</script>
 
 <template id="__bundler_thumbnail">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -52,6 +61,15 @@
 <a href="#pricing" data-cursor>Цены</a>
 <a href="#contact" data-cursor>Контакт</a>
 </nav>
+<button class="theme-toggle" id="themeToggle" aria-label="Переключить тему" data-cursor>
+  <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+  </svg>
+  <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+  </svg>
+</button>
 <button class="btn-outline" data-cursor onclick="document.getElementById('contact').scrollIntoView()"><span>Обсудить проект</span></button>
 <button class="nav-toggle" id="navToggle" aria-label="Меню"><span></span><span></span><span></span></button>
 </div>

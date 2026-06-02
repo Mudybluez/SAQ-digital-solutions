@@ -49,6 +49,18 @@
     menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => { toggle.classList.remove("open"); menu.classList.remove("open"); }));
   }
 
+  /* ---------------- THEME TOGGLE ---------------- */
+  function initTheme() {
+    const toggle = document.getElementById("themeToggle");
+    if (!toggle) return;
+    toggle.addEventListener("click", () => {
+      const isLight = document.body.classList.toggle("light-theme");
+      document.documentElement.classList.toggle("light-theme", isLight);
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    });
+  }
+
   /* ---------------- HERO PARTICLES ---------------- */
   function initParticles() {
     const canvas = document.getElementById("particles");
@@ -291,6 +303,7 @@
   function boot() {
     splitChars();
     initNav();
+    initTheme();
     initParticles();
     initReveals();
     initCarousel();
