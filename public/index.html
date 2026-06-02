@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SAQ Digital Solutions — Строим точно.</title>
+<meta name="description" content="SAQ Digital Solutions — веб-разработка в Астане. От лендинга до платформы. Строим точно, без шаблонов, под конкретный результат." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=2" />
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<rect width="100" height="100" fill="#0C0E15"/>
+<g stroke="#C4862A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M34 30 L52 50 L34 70"/>
+<line x1="50" y1="50" x2="72" y2="50"/>
+<circle cx="50" cy="50" r="3" fill="#E0A840" stroke="none"/>
+</g>
+</svg>
+</template>
+</head>
+<body class="loading">
+
+<!-- ============ LOADER ============ -->
+<div id="loader">
+<svg class="mark" viewBox="0 0 100 100" fill="none">
+<path id="ld1" d="M30 26 L54 50 L30 74" stroke-linecap="round" stroke-linejoin="round" />
+<line id="ld2" x1="50" y1="50" x2="78" y2="50" stroke-linecap="round" />
+</svg>
+<div class="lbl">SAQ · BUILT SHARP</div>
+</div>
+
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+<div class="wrap nav-inner">
+<a class="brand" href="#hero" data-cursor>
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span>
+<span class="ds">Digital Solutions</span>
+</a>
+<nav class="nav-links">
+<a href="#services" data-cursor>Услуги</a>
+<a href="#portfolio" data-cursor>Работы</a>
+<a href="#process" data-cursor>Процесс</a>
+<a href="#pricing" data-cursor>Цены</a>
+<a href="#contact" data-cursor>Контакт</a>
+</nav>
+<button class="btn-outline" data-cursor onclick="document.getElementById('contact').scrollIntoView()"><span>Обсудить проект</span></button>
+<button class="nav-toggle" id="navToggle" aria-label="Меню"><span></span><span></span><span></span></button>
+</div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="#services">Услуги</a>
+<a href="#portfolio">Работы</a>
+<a href="#process">Процесс</a>
+<a href="#pricing">Цены</a>
+<a href="#contact">Контакт</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section id="hero" data-screen-label="Hero">
+<div class="hero-bg"></div>
+<canvas id="particles"></canvas>
+<div class="wrap hero-inner">
+<div class="hero-badge"><span class="pulse"></span>SAQ Digital Solutions · Астана</div>
+<h1 class="hero-h1">
+<span class="line"><span class="l1" data-split>Сайты,</span></span>
+<span class="line"><span class="l2" data-split>которые</span></span>
+<span class="line"><span class="l3 gold-text" data-split>работают.</span></span>
+</h1>
+<div class="hero-rule"></div>
+<p class="hero-sub">От лендинга до платформы. Строим точно — без шаблонов, под конкретный результат.</p>
+<div class="hero-ctas">
+<a class="btn-gold" href="#portfolio" data-cursor>Посмотреть работы<span class="arrow">→</span></a>
+<a class="btn-ghost" href="#pricing" data-cursor>Рассчитать стоимость</a>
+</div>
+</div>
+<div class="scroll-ind">
+<span>Скролл</span>
+<div class="arrow-down"></div>
+</div>
+</section>
+
+<!-- ============ PHILOSOPHY ============ -->
+<section id="philosophy" data-screen-label="Philosophy">
+<div class="wrap">
+<blockquote class="quote reveal">«Сак не выпускал стрелу, пока цель не была точной. <span class="hl">Мы не сдаём сайт, пока он не работает.»</span></blockquote>
+<div class="quote-cite reveal">— операционный код агентства</div>
+
+<div class="values">
+<div class="value reveal">
+<svg class="ico" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><circle cx="16" cy="16" r="2.5"/><line x1="16" y1="1" x2="16" y2="7"/><line x1="16" y1="25" x2="16" y2="31"/><line x1="1" y1="16" x2="7" y2="16"/><line x1="25" y1="16" x2="31" y2="16"/></svg>
+<h3>Точность</h3>
+<p>Каждый элемент — причина. Ничего лишнего.</p>
+</div>
+<div class="value reveal">
+<svg class="ico" viewBox="0 0 32 32"><circle cx="7" cy="25" r="3"/><circle cx="25" cy="7" r="3"/><circle cx="25" cy="25" r="3"/><path d="M7 22 V11 a4 4 0 0 1 4-4 h11"/><line x1="10" y1="25" x2="22" y2="25"/></svg>
+<h3>Стратегия</h3>
+<p>Сначала — зачем. Потом — что и как.</p>
+</div>
+<div class="value reveal">
+<svg class="ico" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12"/><path d="M10 16 l4 4 l9 -10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<h3>Результат</h3>
+<p>Метрики, не красота. Красота следует за этим.</p>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="num" data-count="3"><span class="val">0</span></div><div class="lbl">года в разработке и обучении</div></div>
+<div class="stat"><div class="num" data-count="14"><span class="val">0</span><span class="suf"> дней</span></div><div class="lbl">средний срок запуска сайта</div></div>
+<div class="stat"><div class="num" data-count="100"><span class="val">0</span><span class="suf">%</span></div><div class="lbl">проектов с договором (ИП)</div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section id="services" data-screen-label="Services">
+<div class="wrap">
+<div class="head-block">
+<span class="h-eyebrow">Направления</span>
+<h2 class="section-title">Любой уровень<br>сложности</h2>
+<p class="section-sub">Три направления. Один стандарт точности.</p>
+</div>
+
+<div class="tiers">
+<!-- Simple -->
+<div class="tier simple reveal" data-cursor>
+<div class="cbar"><i data-bar="30"></i></div>
+<span class="tier-badge badge-gold">Старт</span>
+<h3>Лендинг</h3>
+<div class="tier-kind">Одностраничный сайт</div>
+<div class="price"><span class="from">от</span>80 000 ₸</div>
+<div class="timeline">7 дней</div>
+<ul>
+<li>1 страница</li>
+<li>Адаптивный дизайн</li>
+<li>Форма заявки</li>
+<li>SEO-базис</li>
+<li>Хостинг на 1 год</li>
+</ul>
+<a class="tier-cta" href="#contact">Подробнее</a>
+</div>
+
+<!-- Medium / Featured -->
+<div class="tier medium featured reveal" data-cursor>
+<div class="featured-flag">Популярный</div>
+<div class="cbar"><i data-bar="65"></i></div>
+<span class="tier-badge badge-gold">Бизнес</span>
+<h3>Бизнес-сайт</h3>
+<div class="tier-kind">Многостраничный сайт + CMS</div>
+<div class="price"><span class="from">от</span>180 000 ₸</div>
+<div class="timeline">14 дней</div>
+<ul>
+<li>До 8 страниц</li>
+<li>CMS-панель управления</li>
+<li>Интеграции (CRM, оплата)</li>
+<li>Аналитика и события</li>
+<li>SEO полный</li>
+</ul>
+<a class="tier-cta" href="#contact">Обсудить</a>
+</div>
+
+<!-- Enterprise -->
+<div class="tier enterprise reveal" data-cursor>
+<div class="cbar"><i data-bar="100"></i></div>
+<span class="tier-badge badge-blue">Сложный</span>
+<h3>Платформа</h3>
+<div class="tier-kind">Веб-приложение / платформа</div>
+<div class="price">Под запрос</div>
+<div class="timeline">Индивидуально</div>
+<ul>
+<li>Веб-приложение / платформа</li>
+<li>API интеграции</li>
+<li>Кастомная бизнес-логика</li>
+<li>Личные кабинеты</li>
+<li>Поддержка и развитие</li>
+</ul>
+<a class="tier-cta" href="#contact">Написать</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="portfolio" data-screen-label="Portfolio">
+<div class="wrap">
+<div class="head-block">
+<span class="h-eyebrow">Работы</span>
+<h2 class="section-title">Инструменты,<br>которые мы построили</h2>
+<p class="section-sub">Каждый проект — под конкретную задачу.</p>
+</div>
+<div class="work-grid">
+<a class="h-card" href="/work/foodmood" data-cursor>
+<div class="shot"><div class="ph-grid" data-grad="night"></div><div class="kind">Web App · Mockup</div><div class="ovl"></div><span class="card-open">Открыть кейс →</span></div>
+<div class="meta"><div class="pname">FoodMood Platform</div><div class="pdesc">Платформа для доставки и заказов</div><div class="tags"><span>WEB APP</span><span>API</span><span>DASHBOARD</span></div></div>
+</a>
+<a class="h-card" href="/work/restaurant" data-cursor>
+<div class="shot"><div class="ph-grid" data-grad="gold"></div><div class="kind">Landing · Mockup</div><div class="ovl"></div><span class="card-open">Открыть кейс →</span></div>
+<div class="meta"><div class="pname">Restaurant Landing</div><div class="pdesc">Лендинг ресторана · Астана</div><div class="tags"><span>LANDING</span><span>SEO</span><span>FORMS</span></div></div>
+</a>
+<a class="h-card" href="/work/clinic" data-cursor>
+<div class="shot"><div class="ph-grid" data-grad="horizon"></div><div class="kind">Website · Mockup</div><div class="ovl"></div><span class="card-open">Открыть кейс →</span></div>
+<div class="meta"><div class="pname">Med Clinic Website</div><div class="pdesc">Сайт медицинской клиники</div><div class="tags"><span>WEBSITE</span><span>CMS</span><span>BOOKING</span></div></div>
+</a>
+<a class="h-card" href="/work/logistics" data-cursor>
+<div class="shot"><div class="ph-grid" data-grad="image"></div><div class="kind">Dashboard · Mockup</div><div class="ovl"></div><span class="card-open">Открыть кейс →</span></div>
+<div class="meta"><div class="pname">Logistics Dashboard</div><div class="pdesc">Панель управления логистикой</div><div class="tags"><span>PLATFORM</span><span>DATA</span><span>REALTIME</span></div></div>
+</a>
+</div>
+</div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="process" data-screen-label="Process">
+<div class="wrap">
+<div class="head-block">
+<span class="h-eyebrow">Процесс</span>
+<h2 class="section-title">Как мы работаем</h2>
+<p class="section-sub">Шесть шагов. Без хаоса, без сюрпризов в счёте.</p>
+</div>
+<div class="timeline">
+<div class="spine"><i></i></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">01</div><h3>Диагностика</h3><p>Изучаем ваш бизнес, рынок, конкурентов. Задаём точные вопросы.</p></div><div class="spacer"></div></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">02</div><h3>Стратегия</h3><p>Определяем цель сайта. Структура и логика — до дизайна.</p></div><div class="spacer"></div></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">03</div><h3>Дизайн</h3><p>Прототип → дизайн-система → финальные макеты. Только одобренное идёт в код.</p></div><div class="spacer"></div></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">04</div><h3>Разработка</h3><p>Чистый код. Адаптив. Скорость. Никакого конструктора.</p></div><div class="spacer"></div></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">05</div><h3>Запуск</h3><p>Деплой, тесты, финальная проверка. Договор. Документация.</p></div><div class="spacer"></div></div>
+<div class="step"><div class="node"></div><div class="step-card reveal"><div class="step-num">06</div><h3>Поддержка</h3><p>Остаёмся на связи. Исправляем. Улучшаем.</p></div><div class="spacer"></div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing" data-screen-label="Pricing">
+<div class="wrap">
+<div class="head-block">
+<span class="h-eyebrow">Цены</span>
+<h2 class="section-title">Прозрачно<br>и по делу</h2>
+<p class="section-sub">Что входит в каждое направление. Сравните и выберите уровень.</p>
+</div>
+<div class="ptable">
+<div class="prow phead">
+<div class="pcell">Что входит</div>
+<div class="pcell">Лендинг</div>
+<div class="pcell featured-col">Бизнес-сайт</div>
+<div class="pcell">Платформа</div>
+</div>
+<div class="prow"><div class="pcell">Страниц</div><div class="pcell">1</div><div class="pcell featured-col">до 8</div><div class="pcell">∞</div></div>
+<div class="prow"><div class="pcell">Адаптивный дизайн</div><div class="pcell check">✓</div><div class="pcell featured-col check">✓</div><div class="pcell check">✓</div></div>
+<div class="prow"><div class="pcell">CMS-панель</div><div class="pcell dash">—</div><div class="pcell featured-col check">✓</div><div class="pcell check">✓</div></div>
+<div class="prow"><div class="pcell">Интеграции / API</div><div class="pcell dash">базовые</div><div class="pcell featured-col check">✓</div><div class="pcell check">кастом</div></div>
+<div class="prow"><div class="pcell">SEO</div><div class="pcell">базис</div><div class="pcell featured-col check">полный</div><div class="pcell check">полный</div></div>
+<div class="prow"><div class="pcell">Кастомная логика</div><div class="pcell dash">—</div><div class="pcell featured-col dash">—</div><div class="pcell check">✓</div></div>
+<div class="prow pfoot">
+<div class="pcell">Срок · Цена</div>
+<div class="pcell"><span class="price-big">от 80 000 ₸</span><br>7 дней</div>
+<div class="pcell featured-col"><span class="price-big">от 180 000 ₸</span><br>14 дней</div>
+<div class="pcell"><span class="price-big">Под запрос</span><br>индивидуально</div>
+</div>
+</div>
+<div class="price-note">Все цены в тенге (₸). Работаем как ИП — с договором.</div>
+</div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" data-screen-label="Contact">
+<div class="wrap">
+<div class="contact-grid">
+<div class="contact-left">
+<h2 class="contact-h">
+<span class="l reveal">Есть</span>
+<span class="l reveal">задача —</span>
+<span class="l l3 reveal">давайте.</span>
+</h2>
+<p class="contact-lead">Опишите проект — вернёмся с конкретикой: что сделаем, за сколько и в какой срок.</p>
+<p class="contact-direct">Или напишите напрямую:<br><a href="https://t.me/malayev_yerkanat" data-cursor>t.me/malayev_yerkanat</a></p>
+</div>
+<div class="contact-right">
+<form class="lead-form" id="leadForm" novalidate>
+<div class="field"><label for="f-name">Имя</label><input id="f-name" name="name" type="text" placeholder="Как к вам обращаться" required /><div class="err">Укажите имя</div></div>
+<div class="field"><label for="f-phone">Телефон / Telegram</label><input id="f-phone" name="phone" type="text" placeholder="+7 ... или @username" required /><div class="err">Укажите контакт</div></div>
+<div class="field"><label for="f-type">Тип проекта</label><select id="f-type" name="type"><option value="landing">Лендинг</option><option value="business">Бизнес-сайт</option><option value="platform">Платформа</option><option value="unknown">Пока не знаю</option></select></div>
+<div class="field"><label for="f-desc">Описание</label><textarea id="f-desc" name="desc" placeholder="Коротко о бизнесе и задаче"></textarea></div>
+<input type="text" name="company" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+<div class="form-error" id="formError" role="alert"></div>
+<button type="submit" class="btn-submit" data-cursor><span class="bs-label">Отправить заявку</span></button>
+</form>
+<div class="form-success" id="formSuccess">
+<svg class="ok-ico" viewBox="0 0 48 48"><circle cx="24" cy="24" r="21"/><path d="M15 24 l6 6 l12 -14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<h3>Заявка отправлена</h3>
+<p>Свяжемся в течение рабочего дня. Точно.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-foot">
+<div class="foot-rule"></div>
+<div class="wrap">
+<div class="foot-inner">
+<div class="foot-brand">
+<a class="brand" href="#hero">
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span><span class="ds">Digital Solutions</span>
+</a>
+<div class="foot-tag">Built sharp.</div>
+</div>
+<div class="foot-col">
+<h4>Навигация</h4>
+<a href="#services">Услуги</a>
+<a href="#portfolio">Работы</a>
+<a href="#process">Процесс</a>
+<a href="#pricing">Цены</a>
+</div>
+<div class="foot-col">
+<h4>Контакт</h4>
+<a href="https://t.me/malayev_yerkanat">Telegram</a>
+<a href="#contact">Обсудить проект</a>
+</div>
+</div>
+<div class="foot-legal">
+<span class="legal-txt">SAQ Creative Agency • ИП • Казахстан, Астана • 2026</span>
+<span class="lang">RU</span>
+</div>
+</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/main.js?v=2"></script>
+</body>
+</html>

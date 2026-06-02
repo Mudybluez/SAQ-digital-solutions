@@ -1,0 +1,21 @@
+{
+  "name": "saq-digital-solutions",
+  "version": "1.0.0",
+  "description": "SAQ Digital Solutions — сайт агентства. Express backend + статический фронтенд.",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0"
+  },
+  "license": "UNLICENSED"
+}

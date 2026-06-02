@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FoodMood Platform — Кейс · SAQ Digital Solutions</title>
+<meta name="description" content="Платформа доставки и заказов для сети городских кафе: единое приложение для гостей, курьеров и кухни." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/case.css" />
+</head>
+<body class="loading">
+
+<div id="loader">
+<svg class="mark" viewBox="0 0 100 100" fill="none">
+<path id="ld1" d="M30 26 L54 50 L30 74" stroke-linecap="round" stroke-linejoin="round" />
+<line id="ld2" x1="50" y1="50" x2="78" y2="50" stroke-linecap="round" />
+</svg>
+<div class="lbl">SAQ · BUILT SHARP</div>
+</div>
+
+
+<header class="nav" id="nav">
+<div class="wrap nav-inner">
+<a class="brand" href="/" data-cursor>
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span><span class="ds">Digital Solutions</span>
+</a>
+<nav class="nav-links">
+<a href="/#services" data-cursor>Услуги</a>
+<a href="/#portfolio" data-cursor>Работы</a>
+<a href="/#process" data-cursor>Процесс</a>
+<a href="/#pricing" data-cursor>Цены</a>
+<a href="/#contact" data-cursor>Контакт</a>
+</nav>
+<button class="btn-outline" data-cursor onclick="location.href='/#contact'"><span>Обсудить проект</span></button>
+<button class="nav-toggle" id="navToggle" aria-label="Меню"><span></span><span></span><span></span></button>
+</div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+<a href="/#services">Услуги</a>
+<a href="/#portfolio">Работы</a>
+<a href="/#process">Процесс</a>
+<a href="/#pricing">Цены</a>
+<a href="/#contact">Контакт</a>
+</div>
+
+<section id="case-hero">
+<div class="hero-bg"></div>
+<div class="wrap">
+<a class="case-back" href="/#portfolio" data-cursor><span class="ar">←</span> Все работы</a>
+<div class="case-cat">Web App</div>
+<h1 class="case-title"><span data-split>FoodMood Platform</span></h1>
+<p class="case-tagline">Платформа доставки и заказов для сети городских кафе: единое приложение для гостей, курьеров и кухни.</p>
+<div class="hero-rule"></div>
+<div class="case-meta">
+<div class="mi"><div class="k">Роль</div><div class="v">Дизайн + Фронтенд + Бэкенд</div></div>
+<div class="mi"><div class="k">Срок</div><div class="v gold">9 недель</div></div>
+<div class="mi"><div class="k">Стек</div><div class="v">Node.js · PostgreSQL · React</div></div>
+<div class="mi"><div class="k">Год</div><div class="v">2025</div></div>
+</div>
+</div>
+</section>
+
+<section class="case-section" id="overview">
+<div class="wrap">
+<div class="case-visual reveal"><div class="ph-grid" data-grad="night"></div><span class="vlabel">Web App · Mockup</span></div>
+</div>
+<div class="wrap" style="margin-top:64px">
+<div class="overview-grid">
+<p class="lead reveal">FoodMood объединил онлайн-меню, оформление заказа, оплату и логистику доставки в <b>одной платформе</b>. Раньше заказы принимались в трёх разных чатах — теперь это единый поток с автоматическим распределением по кухням и курьерам.</p>
+<div class="facts reveal"><div class="fr"><span class="fk">Тип</span><span class="fv">Веб-приложение</span></div><div class="fr"><span class="fk">Модули</span><span class="fv">Гость, Кухня, Курьер</span></div><div class="fr"><span class="fk">Интеграции</span><span class="fv">Kaspi Pay, карты</span></div><div class="fr"><span class="fk">Нагрузка</span><span class="fv">до 1 200 заказов/день</span></div></div>
+</div>
+</div>
+</section>
+
+<section class="case-section cs-block" id="challenge">
+<div class="wrap">
+<div class="cs-grid">
+<div class="cs-cell reveal">
+<h3>Задача<span class="dot">.</span></h3>
+<p>Сеть из шести точек теряла заказы: операторы вручную переписывали их из мессенджеров в кассу, путали адреса, не видели загрузку кухонь в реальном времени. Нужна была система, которая держит весь путь заказа от корзины до двери клиента.</p>
+</div>
+<div class="cs-cell reveal">
+<h3>Решение<span class="dot">.</span></h3>
+<p>Спроектировали платформу из трёх связанных интерфейсов с общим ядром заказов и реальным временем через веб-сокеты.</p>
+<ul><li>Витрина меню с корзиной и оплатой Kaspi</li><li>Панель кухни: статусы и таймеры приготовления</li><li>Приложение курьера с картой и маршрутом</li><li>Админка: аналитика продаж и отчёты</li></ul>
+</div>
+</div>
+</div>
+</section>
+
+<section class="case-section" id="results">
+<div class="wrap">
+<div class="head-block" style="margin-bottom:0;text-align:center">
+<span class="h-eyebrow" style="justify-content:center">Результат</span>
+<h2 class="section-title">Заказы — в одном потоке</h2>
+</div>
+<div class="res-stats stats"><div class="stat reveal"><div class="num">−40%</div><div class="lbl">времени на обработку заказа</div></div><div class="stat reveal"><div class="num">×2,3</div><div class="lbl">рост повторных заказов</div></div><div class="stat reveal"><div class="num">0</div><div class="lbl">потерянных заявок за квартал</div></div></div>
+</div>
+</section>
+
+<section class="case-section" id="gallery">
+<div class="wrap">
+<div class="head-block"><span class="h-eyebrow">Экраны</span><h2 class="section-title">Интерфейс</h2></div>
+<div class="gal-grid">
+<div class="g reveal" data-grad="night"><div class="ph-grid"></div></div>
+<div class="g reveal" data-grad="horizon"><div class="ph-grid"></div></div>
+<div class="g reveal" data-grad="night"><div class="ph-grid"></div></div>
+</div>
+</div>
+</section>
+
+<section class="case-section" id="case-cta">
+<div class="wrap">
+<div class="case-cta-box reveal">
+<h2>Похожая задача?</h2>
+<p>Опишите проект — вернёмся с конкретикой: что сделаем, за сколько и в какой срок.</p>
+<div class="case-cta-actions">
+<a class="btn-gold" href="/#contact" data-cursor>Обсудить проект<span class="arrow">→</span></a>
+<a class="btn-ghost" href="/#portfolio" data-cursor>Другие работы</a>
+</div>
+<div class="next-case">Следующий кейс → <a href="/work/restaurant">Restaurant Landing</a></div>
+</div>
+</div>
+</section>
+
+<footer class="site-foot">
+<div class="foot-rule"></div>
+<div class="wrap">
+<div class="foot-inner">
+<div class="foot-brand">
+<a class="brand" href="/">
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span><span class="ds">Digital Solutions</span>
+</a>
+<div class="foot-tag">Built sharp.</div>
+</div>
+<div class="foot-col"><h4>Навигация</h4>
+<a href="/#services">Услуги</a><a href="/#portfolio">Работы</a><a href="/#process">Процесс</a><a href="/#pricing">Цены</a></div>
+<div class="foot-col"><h4>Контакт</h4>
+<a href="https://t.me/malayev_yerkanat">Telegram</a><a href="/#contact">Обсудить проект</a></div>
+</div>
+<div class="foot-legal">
+<span class="legal-txt">SAQ Creative Agency • ИП • Казахстан, Астана • 2026</span>
+<span class="lang">RU</span>
+</div>
+</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
