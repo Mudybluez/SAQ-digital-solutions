@@ -140,6 +140,26 @@ html {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Firefox Scrollbar Customization */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 134, 42, 0.3) var(--bg);
+}
+
+/* Custom Scrollbar for Chrome, Safari, Edge, Opera */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(196, 134, 42, 0.3);
+  border-radius: 99px;
+  transition: background 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold2);
 }
 
 body {
