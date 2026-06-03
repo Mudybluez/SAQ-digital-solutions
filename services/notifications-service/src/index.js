@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3004;
 const TYPE_LABELS = {
   landing: "Лендинг",
   business: "Бизнес-сайт",
-  platform: "Платформа",
+  platform: "Кастом",
   unknown: "Пока не знаю",
 };
 
