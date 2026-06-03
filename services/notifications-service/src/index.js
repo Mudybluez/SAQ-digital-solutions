@@ -1,6 +1,10 @@
-// Уведомления о новой заявке.
-// Каналы включаются автоматически, когда в .env заданы их переменные.
-// Сейчас можно ничего не настраивать — заявки всё равно пишутся в базу.
+import express from "express";
+import nodemailer from "nodemailer";
+
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 3004;
 
 const TYPE_LABELS = {
   landing: "Лендинг",
@@ -29,7 +33,6 @@ async function notifyTelegram(text) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return false;
   const payload = { chat_id: chatId, text, disable_web_page_preview: true };
-  // Если группа с темами (Topics) — пишем в конкретную тему.
   const topicId = process.env.TELEGRAM_TOPIC_ID;
   if (topicId) payload.message_thread_id = Number(topicId);
   try {
@@ -38,10 +41,10 @@ async function notifyTelegram(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) console.error("[notify] Telegram error:", await res.text());
+    if (!res.ok) console.error("[notify-service] Telegram error:", await res.text());
     return res.ok;
   } catch (err) {
-    console.error("[notify] Telegram failed:", err.message);
+    console.error("[notify-service] Telegram failed:", err.message);
     return false;
   }
 }
@@ -49,13 +52,6 @@ async function notifyTelegram(text) {
 async function notifyEmail(text, lead) {
   const { SMTP_HOST, SMTP_USER, SMTP_PASS, LEAD_EMAIL_TO } = process.env;
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !LEAD_EMAIL_TO) return false;
-  let nodemailer;
-  try {
-    nodemailer = (await import("nodemailer")).default;
-  } catch {
-    console.warn("[notify] Email настроен, но пакет nodemailer не установлен (npm i nodemailer).");
-    return false;
-  }
   try {
     const transport = nodemailer.createTransport({
       host: SMTP_HOST,
@@ -71,17 +67,35 @@ async function notifyEmail(text, lead) {
     });
     return true;
   } catch (err) {
-    console.error("[notify] Email failed:", err.message);
+    console.error("[notify-service] Email failed:", err.message);
     return false;
   }
 }
 
-export async function notifyLead(lead, id) {
+app.post("/notify", async (req, res) => {
+  const { lead, id } = req.body;
+  if (!lead || !id) {
+    return res.status(400).json({ ok: false, error: "Неверная полезная нагрузка." });
+  }
+
   const text = formatLead(lead, id);
-  const results = await Promise.allSettled([notifyTelegram(text), notifyEmail(text, lead)]);
+  console.log(`[notify-service] Processing notification for lead #${id}`);
+
+  const results = await Promise.allSettled([
+    notifyTelegram(text),
+    notifyEmail(text, lead)
+  ]);
+
   const delivered = results.some((r) => r.status === "fulfilled" && r.value);
   if (!delivered) {
-    console.log("[notify] Каналы уведомлений не настроены. Заявка сохранена в базе:\n" + text + "\n");
+    console.log("[notify-service] Уведомления не доставлены. Проверьте конфигурацию .env.");
   }
-  return delivered;
-}
+
+  return res.json({ ok: true, delivered });
+});
+
+app.get("/health", (req, res) => res.json({ ok: true, service: "notifications" }));
+
+app.listen(PORT, () => {
+  console.log(`Notifications service listening on port ${PORT}`);
+});

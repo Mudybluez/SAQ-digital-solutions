@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SAQ · Панель управления</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/styles.css" />
+<style>
+  :root {
+    --admin-bg: #0C0E15;
+    --admin-card: #131620;
+    --admin-border: #222739;
+    --admin-text-muted: #A08860;
+  }
+  body.admin-body {
+    background: var(--admin-bg);
+    color: var(--text);
+    padding: 40px 20px;
+    font-family: var(--font);
+  }
+  .admin-header {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 24px;
+  }
+  .admin-title h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 0;
+  }
+  .admin-title p {
+    color: var(--admin-text-muted);
+    margin: 4px 0 0;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 12px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .tab-btn:hover, .tab-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(196, 134, 42, 0.06);
+  }
+  .admin-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .admin-panel {
+    display: none;
+  }
+  .admin-panel.active {
+    display: block;
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: var(--admin-card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+  }
+  th, td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  th {
+    background: rgba(26, 30, 44, 0.4);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+  tr:hover td {
+    background: rgba(26, 30, 44, 0.2);
+  }
+  td {
+    vertical-align: top;
+    font-size: 0.95rem;
+  }
+  .status-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+  .status-tag.active { background: rgba(72, 180, 130, 0.15); color: var(--success); }
+
+  /* Forms and fields */
+  .editor-card {
+    background: var(--admin-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-top: 24px;
+  }
+  .editor-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 12px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: 0.85rem;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    color: var(--admin-text-muted);
+    letter-spacing: 0.04em;
+  }
+  input, textarea, select {
+    background: rgba(12, 14, 21, 0.6);
+    border: 1px solid var(--admin-border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 10px rgba(196, 134, 42, 0.15);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  /* List editor layout */
+  .dynamic-list-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .dynamic-list-item input {
+    flex: 1;
+  }
+  .btn-danger {
+    background: rgba(200, 64, 64, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(200, 64, 64, 0.3);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .btn-danger:hover {
+    background: var(--danger);
+    color: white;
+  }
+  .btn-secondary {
+    background: rgba(75, 122, 196, 0.1);
+    color: var(--blue2);
+    border: 1px solid rgba(75, 122, 196, 0.3);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .btn-secondary:hover {
+    background: var(--blue);
+    color: white;
+  }
+  .btn-primary {
+    background: var(--grad-gold);
+    color: var(--bg);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(196, 134, 42, 0.3);
+  }
+
+  .portfolio-item-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--admin-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .portfolio-item-info h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--text);
+  }
+  .portfolio-item-info p {
+    margin: 4px 0 0;
+    color: var(--admin-text-muted);
+    font-size: 0.88rem;
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Upload block */
+  .upload-wrapper {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .preview-box {
+    width: 100px;
+    height: 70px;
+    border-radius: 6px;
+    background: #090b0e;
+    border: 1px solid var(--admin-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+</head>
+<body class="admin-body">
+
+<div class="admin-header">
+  <div class="admin-title">
+    <h1>Панель управления SAQ</h1>
+    <p>Админка · ИП • Built sharp.</p>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('leads')">Заявки</button>
+    <button class="tab-btn" onclick="switchTab('portfolio')">Портфолио</button>
+  </div>
+</div>
+
+<div class="admin-content">
+  <!-- Leads Panel -->
+  <div id="leadsPanel" class="admin-panel active">
+    <h2>Поступившие заявки</h2>
+    <div id="leadsTableContainer">
+      <div style="text-align: center; padding: 40px;">Загрузка заявок...</div>
+    </div>
+    <div id="leadsPagination" class="pagination-controls" style="margin-top:20px;"></div>
+  </div>
+
+  <!-- Portfolio Panel -->
+  <div id="portfolioPanel" class="admin-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+      <h2>Работы в портфолио</h2>
+      <button class="btn-primary" onclick="showNewProjectForm()">Добавить работу</button>
+    </div>
+
+    <!-- Edit/List Section -->
+    <div id="portfolioListContainer">
+      <div style="text-align: center; padding: 40px;">Загрузка проектов...</div>
+    </div>
+    <div id="portfolioListPagination" class="pagination-controls" style="margin-top:20px;"></div>
+
+    <!-- Portfolio Form Editor (Hidden by default) -->
+    <div id="portfolioEditor" class="editor-card" style="display:none;">
+      <div class="editor-title" id="editorTitle">Создать новый кейс</div>
+      <form id="projectForm" onsubmit="saveProject(event)">
+        <input type="hidden" id="projectId" />
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Название проекта *</label>
+            <input type="text" id="projectTitle" required placeholder="Например: Med Clinic Website" oninput="generateSlug(this.value)" />
+          </div>
+          <div class="form-group">
+            <label>Slug URL (только латиница и дефис) *</label>
+            <input type="text" id="projectSlug" required placeholder="Например: med-clinic" pattern="^[a-z0-9\-]+$" />
+          </div>
+          <div class="form-group">
+            <label>Категория *</label>
+            <input type="text" id="projectCategory" required placeholder="Например: Website · Mockup" />
+          </div>
+          <div class="form-group">
+            <label>Краткое описание *</label>
+            <input type="text" id="projectDescription" required placeholder="Отображается на карточке портфолио" />
+          </div>
+          <div class="form-group">
+            <label>Теги (через запятую) *</label>
+            <input type="text" id="projectTags" required placeholder="WEBSITE, CMS, BOOKING" />
+          </div>
+          <div class="form-group">
+            <label>Ссылка на готовый сайт (необязательно)</label>
+            <input type="url" id="projectLink" placeholder="https://example.com" />
+          </div>
+          
+          <!-- Image selection / Upload -->
+          <div class="form-group full-width">
+            <label>Основная обложка (Картинка или Градиент)</label>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+              <div class="form-group">
+                <label>Тип обложки</label>
+                <select id="imageTypeSelect" onchange="toggleImageInputs()">
+                  <option value="gradient">Готовый Градиент</option>
+                  <option value="upload">Загрузить файл изображения</option>
+                </select>
+              </div>
+              
+              <!-- Gradient selector -->
+              <div class="form-group" id="gradientSelectorGroup">
+                <label>Выберите градиент</label>
+                <select id="projectGradient">
+                  <option value="night">Steppe Night (Сине-голубой)</option>
+                  <option value="gold">Saka Gold (Золотой)</option>
+                  <option value="horizon">Horizon (Сине-фиолетовый)</option>
+                  <option value="image">Случайная абстракция (Сеть)</option>
+                </select>
+              </div>
+
+              <!-- Upload selector -->
+              <div class="form-group" id="imageUploadGroup" style="display:none;">
+                <label>Выбрать файл</label>
+                <div class="upload-wrapper">
+                  <input type="file" id="projectImageFile" accept="image/*" onchange="uploadImage(this, 'projectImageUrl')" />
+                  <input type="hidden" id="projectImageUrl" />
+                  <div class="preview-box" id="projectImagePreview">
+                    <span style="font-size:11px;color:var(--admin-text-muted);">Нет фото</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Overview -->
+          <div class="form-group full-width" style="margin-top: 20px;">
+            <label style="color:var(--gold);font-weight:700;">Блок 1: Обзор проекта</label>
+          </div>
+          <div class="form-group full-width">
+            <label>Текст обзора (Вводный абзац)</label>
+            <textarea id="projectOverview" required placeholder="Подробное введение в проект..."></textarea>
+          </div>
+
+          <!-- Facts constructor -->
+          <div class="form-group full-width">
+            <label>Факты проекта (Параметры сбоку)</label>
+            <div id="factsList">
+              <!-- Dynamic entries -->
+            </div>
+            <button type="button" class="btn-secondary" onclick="addFactRow('', '')" style="align-self: flex-start; margin-top: 8px;">+ Добавить факт</button>
+          </div>
+
+          <!-- Section: Challenge & Solution -->
+          <div class="form-group full-width" style="margin-top: 20px;">
+            <label style="color:var(--gold);font-weight:700;">Блок 2: Задача и Решение</label>
+          </div>
+          <div class="form-group">
+            <label>Текст задачи</label>
+            <textarea id="projectChallenge" required placeholder="Какая проблема стояла перед клиентом..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Текст решения</label>
+            <textarea id="projectSolution" required placeholder="Какое решение мы разработали..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Ключевые пункты решения (список)</label>
+            <div id="solutionPointsList">
+              <!-- Dynamic points -->
+            </div>
+            <button type="button" class="btn-secondary" onclick="addSolutionPointRow('')" style="align-self: flex-start; margin-top: 8px;">+ Добавить пункт решения</button>
+          </div>
+
+          <!-- Section: Results -->
+          <div class="form-group full-width" style="margin-top: 20px;">
+            <label style="color:var(--gold);font-weight:700;">Блок 3: Результаты</label>
+          </div>
+          <div class="form-group">
+            <label>Заголовок результата</label>
+            <input type="text" id="projectResultsTitle" required placeholder="Например: Запись круглосуточно" />
+          </div>
+          <div class="form-group">
+            <!-- empty for grid alignment -->
+          </div>
+          <div class="form-group full-width">
+            <label>Статистика результатов</label>
+            <div id="resultsList">
+              <!-- Dynamic stats -->
+            </div>
+            <button type="button" class="btn-secondary" onclick="addResultRow('', '')" style="align-self: flex-start; margin-top: 8px;">+ Добавить статистику</button>
+          </div>
+
+          <!-- Section: Screens/Gallery -->
+          <div class="form-group full-width" style="margin-top: 20px;">
+            <label style="color:var(--gold);font-weight:700;">Блок 4: Экраны интерфейса (Галерея)</label>
+          </div>
+          <div class="form-group full-width">
+            <div id="screensList">
+              <!-- Dynamic screens -->
+            </div>
+            <button type="button" class="btn-secondary" onclick="addScreenRow('gradient', 'night', '')" style="align-self: flex-start; margin-top: 8px;">+ Добавить экран в галерею</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap: 12px; justify-content:flex-end; border-top:1px solid var(--admin-border); padding-top: 24px;">
+          <button type="button" class="tab-btn" onclick="cancelEdit()">Отмена</button>
+          <button type="submit" class="btn-primary">Сохранить кейс</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentTab = 'leads';
+  let allLeads = [];
+  let leadsPage = 1;
+  const leadsLimit = 10;
+
+  let allProjects = [];
+  let projectsPage = 1;
+  const projectsLimit = 5;
+
+  // Tabs switching
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'));
+
+    // Highlight selected tab
+    const selectedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.textContent === (tab === 'leads' ? 'Заявки' : 'Портфолио'));
+    if (selectedBtn) selectedBtn.classList.add('active');
+
+    if (tab === 'leads') {
+      document.getElementById('leadsPanel').classList.add('active');
+      loadLeads();
+    } else {
+      document.getElementById('portfolioPanel').classList.add('active');
+      loadPortfolio();
+      cancelEdit(); // Hide form on tab switch
+    }
+  }
+
+  // Fetch leads and render
+  async function loadLeads() {
+    const container = document.getElementById('leadsTableContainer');
+    const pagContainer = document.getElementById('leadsPagination');
+    try {
+      const res = await fetch('/api/lead/list');
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка загрузки');
+
+      allLeads = data.leads;
+      leadsPage = 1;
+      renderLeadsPage(1);
+    } catch (err) {
+      container.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 40px 0;">Ошибка авторизации или загрузки данных.</div>`;
+      pagContainer.innerHTML = '';
+    }
+  }
+
+  function renderLeadsPage(page) {
+    const container = document.getElementById('leadsTableContainer');
+    const pagContainer = document.getElementById('leadsPagination');
+    if (!allLeads || allLeads.length === 0) {
+      container.innerHTML = `<div style="text-align: center; color: var(--admin-text-muted); padding: 40px 0;">Заявок пока нет.</div>`;
+      pagContainer.innerHTML = '';
+      return;
+    }
+
+    leadsPage = page;
+    const totalPages = Math.ceil(allLeads.length / leadsLimit);
+    if (leadsPage > totalPages) leadsPage = totalPages;
+    if (leadsPage < 1) leadsPage = 1;
+
+    const start = (leadsPage - 1) * leadsLimit;
+    const end = start + leadsLimit;
+    const pageLeads = allLeads.slice(start, end);
+
+    const rows = pageLeads.map(l => `
+      <tr>
+        <td style="font-family:var(--mono);font-size:0.8rem;color:var(--admin-text-muted);">${l.id}</td>
+        <td style="white-space:nowrap;font-size:0.85rem;">${new Date(l.created_at).toLocaleString('ru-RU')}</td>
+        <td style="font-weight:600;color:var(--gold);">${escapeHtml(l.name)}</td>
+        <td>${escapeHtml(l.contact)}</td>
+        <td><span class="status-tag active">${escapeHtml(translateType(l.type))}</span></td>
+        <td style="color:var(--text2);font-size:0.88rem;max-width:320px;word-break:break-word;">${escapeHtml(l.message || '—')}</td>
+      </tr>
+    `).join('');
+
+    container.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Дата</th>
+            <th>Имя</th>
+            <th>Контакт</th>
+            <th>Тип проекта</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+
+    renderLeadsControls(totalPages);
+  }
+
+  function renderLeadsControls(totalPages) {
+    const pagContainer = document.getElementById('leadsPagination');
+    if (totalPages <= 1) {
+      pagContainer.innerHTML = '';
+      return;
+    }
+
+    let buttons = [];
+    buttons.push(`<button class="pagination-btn" ${leadsPage === 1 ? 'disabled' : ''} onclick="renderLeadsPage(${leadsPage - 1})">← Назад</button>`);
+
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(`<button class="pagination-btn ${i === leadsPage ? 'active' : ''}" onclick="renderLeadsPage(${i})">${i}</button>`);
+    }
+
+    buttons.push(`<button class="pagination-btn" ${leadsPage === totalPages ? 'disabled' : ''} onclick="renderLeadsPage(${leadsPage + 1})">Вперед →</button>`);
+
+    pagContainer.innerHTML = buttons.join('');
+  }
+
+  // Type translate
+  function translateType(t) {
+    const types = { landing: "Лендинг", business: "Бизнес-сайт", platform: "Платформа", unknown: "Пока не знает" };
+    return types[t] || t || "—";
+  }
+
+  // Escape HTML helper
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // Slug generator helper
+  function generateSlug(val) {
+    const slugInput = document.getElementById('projectSlug');
+    // If user edited it manually, don't overwrite. But on new creation it's helpful
+    if (document.getElementById('projectId').value === '') {
+      slugInput.value = val
+        .toLowerCase()
+        .replace(/[^a-z0-9\s\-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/\-+/g, '-');
+    }
+  }
+
+  // Toggle image inputs based on type
+  function toggleImageInputs() {
+    const type = document.getElementById('imageTypeSelect').value;
+    if (type === 'gradient') {
+      document.getElementById('gradientSelectorGroup').style.display = 'flex';
+      document.getElementById('imageUploadGroup').style.display = 'none';
+    } else {
+      document.getElementById('gradientSelectorGroup').style.display = 'none';
+      document.getElementById('imageUploadGroup').style.display = 'flex';
+    }
+  }
+
+  // Image upload handler
+  async function uploadImage(fileInput, targetUrlInputId) {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const preview = fileInput.nextElementSibling.nextElementSibling;
+    preview.innerHTML = `<span style="font-size:11px;color:var(--admin-text-muted);">Загрузка...</span>`;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/projects/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка загрузки изображения');
+
+      document.getElementById(targetUrlInputId).value = data.url;
+      preview.innerHTML = `<img src="${data.url}" />`;
+    } catch (err) {
+      alert(err.message);
+      preview.innerHTML = `<span style="font-size:11px;color:var(--danger);">Ошибка</span>`;
+    }
+  }
+
+  // Dynamic rows helpers
+  function addFactRow(key, val) {
+    const container = document.getElementById('factsList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-list-item fact-row';
+    div.innerHTML = `
+      <input type="text" placeholder="Ключ (например: Тип)" value="${escapeHtml(key)}" class="fact-key" required />
+      <input type="text" placeholder="Значение (например: Корпоративный)" value="${escapeHtml(val)}" class="fact-val" required />
+      <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Удалить</button>
+    `;
+    container.appendChild(div);
+  }
+
+  function addSolutionPointRow(val) {
+    const container = document.getElementById('solutionPointsList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-list-item solution-point-row';
+    div.innerHTML = `
+      <input type="text" placeholder="Пункт решения (например: Витрина меню с корзиной)" value="${escapeHtml(val)}" required />
+      <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Удалить</button>
+    `;
+    container.appendChild(div);
+  }
+
+  function addResultRow(num, lbl) {
+    const container = document.getElementById('resultsList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-list-item result-row';
+    div.innerHTML = `
+      <input type="text" placeholder="Показатель (например: +78%)" value="${escapeHtml(num)}" class="result-num" required style="max-width: 180px;" />
+      <input type="text" placeholder="Описание (например: онлайн-записей)" value="${escapeHtml(lbl)}" class="result-lbl" required />
+      <button type="button" class="btn-danger" onclick="this.parentElement.remove()">Удалить</button>
+    `;
+    container.appendChild(div);
+  }
+
+  function addScreenRow(type, grad, imageUrl) {
+    const container = document.getElementById('screensList');
+    const index = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'dynamic-list-item screen-row';
+    
+    const displayGrad = type === 'gradient' ? 'flex' : 'none';
+    const displayUpload = type === 'upload' ? 'flex' : 'none';
+    
+    div.innerHTML = `
+      <div style="display:flex; gap: 12px; width: 100%; flex-wrap: wrap; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid var(--admin-border);">
+        <div class="form-group" style="flex: 1; min-width: 140px;">
+          <label>Тип экрана</label>
+          <select class="screen-type-select" onchange="toggleScreenType(this)" style="padding: 8px; font-size: 0.85rem;">
+            <option value="gradient" ${type === 'gradient' ? 'selected' : ''}>Градиент</option>
+            <option value="upload" ${type === 'upload' ? 'selected' : ''}>Загрузить скриншот</option>
+          </select>
+        </div>
+
+        <div class="form-group screen-grad-group" style="flex: 1; min-width: 140px; display: ${displayGrad};">
+          <label>Градиент</label>
+          <select class="screen-grad-val" style="padding: 8px; font-size: 0.85rem;">
+            <option value="night" ${grad === 'night' ? 'selected' : ''}>Steppe Night (Синий)</option>
+            <option value="gold" ${grad === 'gold' ? 'selected' : ''}>Saka Gold (Золотой)</option>
+            <option value="horizon" ${grad === 'horizon' ? 'selected' : ''}>Horizon (Фиолетовый)</option>
+            <option value="image" ${grad === 'image' ? 'selected' : ''}>Случайная абстракция (Сеть)</option>
+          </select>
+        </div>
+
+        <div class="form-group screen-upload-group" style="flex: 2; min-width: 200px; display: ${displayUpload};">
+          <label>Скриншот</label>
+          <div class="upload-wrapper">
+            <input type="file" accept="image/*" onchange="uploadImage(this, 'screen-url-${index}')" style="padding: 6px; font-size: 0.8rem;" />
+            <input type="hidden" class="screen-image-url" id="screen-url-${index}" value="${imageUrl || ''}" />
+            <div class="preview-box" style="width: 60px; height: 40px;">
+              ${imageUrl ? `<img src="${imageUrl}" />` : `<span style="font-size:9px;color:var(--admin-text-muted);">Нет</span>`}
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-danger" onclick="this.parentElement.parentElement.remove()" style="align-self: center; margin-top: 10px;">Удалить</button>
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  function toggleScreenType(select) {
+    const parent = select.parentElement.parentElement;
+    const gradGroup = parent.querySelector('.screen-grad-group');
+    const uploadGroup = parent.querySelector('.screen-upload-group');
+    
+    if (select.value === 'gradient') {
+      gradGroup.style.display = 'flex';
+      uploadGroup.style.display = 'none';
+    } else {
+      gradGroup.style.display = 'none';
+      uploadGroup.style.display = 'flex';
+    }
+  }
+
+  // Fetch portfolio projects
+  async function loadPortfolio() {
+    const container = document.getElementById('portfolioListContainer');
+    const pagContainer = document.getElementById('portfolioListPagination');
+    try {
+      const res = await fetch('/api/projects');
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка загрузки');
+
+      allProjects = data.projects;
+      projectsPage = 1;
+      renderProjectsPage(1);
+    } catch (err) {
+      container.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 40px 0;">Ошибка загрузки проектов: ${err.message}</div>`;
+      pagContainer.innerHTML = '';
+    }
+  }
+
+  function renderProjectsPage(page) {
+    const container = document.getElementById('portfolioListContainer');
+    const pagContainer = document.getElementById('portfolioListPagination');
+    if (!allProjects || allProjects.length === 0) {
+      container.innerHTML = `<div style="text-align: center; color: var(--admin-text-muted); padding: 40px 0;">Работ пока нет.</div>`;
+      pagContainer.innerHTML = '';
+      return;
+    }
+
+    projectsPage = page;
+    const totalPages = Math.ceil(allProjects.length / projectsLimit);
+    if (projectsPage > totalPages) projectsPage = totalPages;
+    if (projectsPage < 1) projectsPage = 1;
+
+    const start = (projectsPage - 1) * projectsLimit;
+    const end = start + projectsLimit;
+    const pageProjects = allProjects.slice(start, end);
+
+    const cards = pageProjects.map(p => `
+      <div class="portfolio-item-card">
+        <div class="portfolio-item-info">
+          <h3>${escapeHtml(p.title)}</h3>
+          <p>${escapeHtml(p.category)} · /work/${p.slug} ${p.link ? `· <a href="${p.link}" target="_blank" style="color:var(--blue2);">Сайт</a>` : ''}</p>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" onclick="editProject(${JSON.stringify(p).replace(/"/g, '&quot;')})">Редактировать</button>
+          <button class="btn-danger" onclick="deleteProject(${p.id})">Удалить</button>
+        </div>
+      </div>
+    `).join('');
+
+    container.innerHTML = cards;
+    renderProjectsControls(totalPages);
+  }
+
+  function renderProjectsControls(totalPages) {
+    const pagContainer = document.getElementById('portfolioListPagination');
+    if (totalPages <= 1) {
+      pagContainer.innerHTML = '';
+      return;
+    }
+
+    let buttons = [];
+    buttons.push(`<button class="pagination-btn" ${projectsPage === 1 ? 'disabled' : ''} onclick="renderProjectsPage(${projectsPage - 1})">← Назад</button>`);
+
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(`<button class="pagination-btn ${i === projectsPage ? 'active' : ''}" onclick="renderProjectsPage(${i})">${i}</button>`);
+    }
+
+    buttons.push(`<button class="pagination-btn" ${projectsPage === totalPages ? 'disabled' : ''} onclick="renderProjectsPage(${projectsPage + 1})">Вперед →</button>`);
+
+    pagContainer.innerHTML = buttons.join('');
+  }
+
+  // Edit project initialization
+  function editProject(project) {
+    document.getElementById('portfolioListContainer').style.display = 'none';
+    document.getElementById('portfolioEditor').style.display = 'block';
+    
+    document.getElementById('editorTitle').textContent = `Редактировать кейс: ${project.title}`;
+    
+    // Fill fields
+    document.getElementById('projectId').value = project.id;
+    document.getElementById('projectTitle').value = project.title;
+    document.getElementById('projectSlug').value = project.slug;
+    document.getElementById('projectCategory').value = project.category;
+    document.getElementById('projectDescription').value = project.description;
+    document.getElementById('projectTags').value = project.tags.join(', ');
+    document.getElementById('projectLink').value = project.link || '';
+    
+    // Header image setting
+    const isUploadedImg = project.image.startsWith('/') || project.image.startsWith('http');
+    if (isUploadedImg) {
+      document.getElementById('imageTypeSelect').value = 'upload';
+      document.getElementById('projectImageUrl').value = project.image;
+      document.getElementById('projectImagePreview').innerHTML = `<img src="${project.image}" />`;
+    } else {
+      document.getElementById('imageTypeSelect').value = 'gradient';
+      document.getElementById('projectGradient').value = project.image;
+      document.getElementById('projectImageUrl').value = '';
+      document.getElementById('projectImagePreview').innerHTML = `<span style="font-size:11px;color:var(--admin-text-muted);">Нет фото</span>`;
+    }
+    toggleImageInputs();
+
+    // Section 1: Overview & Facts
+    document.getElementById('projectOverview').value = project.overview;
+    
+    const factsContainer = document.getElementById('factsList');
+    factsContainer.innerHTML = '';
+    Object.entries(project.facts).forEach(([k, v]) => addFactRow(k, v));
+
+    // Section 2: Challenge & Solution
+    document.getElementById('projectChallenge').value = project.challenge;
+    document.getElementById('projectSolution').value = project.solution;
+    
+    const solutionsContainer = document.getElementById('solutionPointsList');
+    solutionsContainer.innerHTML = '';
+    project.solution_points.forEach(pt => addSolutionPointRow(pt));
+
+    // Section 3: Results
+    document.getElementById('projectResultsTitle').value = project.results_title;
+    
+    const resultsContainer = document.getElementById('resultsList');
+    resultsContainer.innerHTML = '';
+    project.results.forEach(st => addResultRow(st.num, st.lbl));
+
+    // Section 4: Screens/Gallery
+    const screensContainer = document.getElementById('screensList');
+    screensContainer.innerHTML = '';
+    project.screens.forEach(scr => {
+      if (scr.image) {
+        addScreenRow('upload', '', scr.image);
+      } else {
+        addScreenRow('gradient', scr.grad, '');
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Cancel edit/creation
+  function cancelEdit() {
+    document.getElementById('portfolioListContainer').style.display = 'block';
+    document.getElementById('portfolioEditor').style.display = 'none';
+    document.getElementById('projectForm').reset();
+    document.getElementById('projectId').value = '';
+    document.getElementById('factsList').innerHTML = '';
+    document.getElementById('solutionPointsList').innerHTML = '';
+    document.getElementById('resultsList').innerHTML = '';
+    document.getElementById('screensList').innerHTML = '';
+  }
+
+  // Prepare & show new project form
+  function showNewProjectForm() {
+    cancelEdit();
+    document.getElementById('portfolioListContainer').style.display = 'none';
+    document.getElementById('portfolioEditor').style.display = 'block';
+    document.getElementById('editorTitle').textContent = "Создать новый кейс";
+    
+    // Add default template blocks to make creation easier
+    addFactRow("Тип", "Лендинг / Сайт");
+    addFactRow("Локация", "Астана");
+    addFactRow("CMS", "Своя панель");
+    
+    addSolutionPointRow("Качественная адаптивная верстка");
+    addSolutionPointRow("SEO оптимизация контента");
+    
+    addResultRow("+30%", "конверсия заявок");
+    
+    addScreenRow("gradient", "night", "");
+  }
+
+  // Save project (mutates database)
+  async function saveProject(event) {
+    event.preventDefault();
+
+    const id = document.getElementById('projectId').value;
+    const isEdit = id !== '';
+
+    // Collect tags
+    const tags = document.getElementById('projectTags').value
+      .split(',')
+      .map(t => t.trim().toUpperCase())
+      .filter(Boolean);
+
+    // Collect Facts
+    const facts = {};
+    document.querySelectorAll('.fact-row').forEach(row => {
+      const k = row.querySelector('.fact-key').value.trim();
+      const v = row.querySelector('.fact-val').value.trim();
+      if (k && v) facts[k] = v;
+    });
+
+    // Collect Solution points
+    const solution_points = [];
+    document.querySelectorAll('.solution-point-row').forEach(row => {
+      const v = row.querySelector('input').value.trim();
+      if (v) solution_points.push(v);
+    });
+
+    // Collect Results stats
+    const results = [];
+    document.querySelectorAll('.result-row').forEach(row => {
+      const num = row.querySelector('.result-num').value.trim();
+      const lbl = row.querySelector('.result-lbl').value.trim();
+      if (num && lbl) results.push({ num, lbl });
+    });
+
+    // Collect Screens
+    const screens = [];
+    document.querySelectorAll('.screen-row').forEach(row => {
+      const type = row.querySelector('.screen-type-select').value;
+      if (type === 'gradient') {
+        const grad = row.querySelector('.screen-grad-val').value;
+        screens.push({ grad });
+      } else {
+        const image = row.querySelector('.screen-image-url').value;
+        if (image) screens.push({ image });
+      }
+    });
+
+    // Handle header image path
+    const imageType = document.getElementById('imageTypeSelect').value;
+    const image = imageType === 'gradient' 
+      ? document.getElementById('projectGradient').value 
+      : document.getElementById('projectImageUrl').value;
+
+    if (!image) {
+      alert("Пожалуйста, загрузите картинку или выберите градиент обложки.");
+      return;
+    }
+
+    const payload = {
+      slug: document.getElementById('projectSlug').value.trim().toLowerCase(),
+      title: document.getElementById('projectTitle').value.trim(),
+      description: document.getElementById('projectDescription').value.trim(),
+      category: document.getElementById('projectCategory').value.trim(),
+      tags,
+      image,
+      link: document.getElementById('projectLink').value.trim() || null,
+      overview: document.getElementById('projectOverview').value.trim(),
+      facts,
+      challenge: document.getElementById('projectChallenge').value.trim(),
+      solution: document.getElementById('projectSolution').value.trim(),
+      solution_points,
+      results_title: document.getElementById('projectResultsTitle').value.trim(),
+      results,
+      screens
+    };
+
+    const url = isEdit ? `/api/projects/${id}` : '/api/projects';
+    const method = isEdit ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка при сохранении');
+
+      alert("Кейс успешно сохранен!");
+      cancelEdit();
+      loadPortfolio();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  // Delete project confirmation
+  async function deleteProject(id) {
+    if (!confirm("Вы действительно хотите удалить этот кейс? Это действие необратимо!")) return;
+
+    try {
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка удаления');
+
+      alert("Кейс успешно удален!");
+      loadPortfolio();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  // Boot: default page load
+  window.onload = () => {
+    loadLeads();
+  };
+</script>
+</body>
+</html>

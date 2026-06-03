@@ -10,6 +10,11 @@
   --bg4:  #222739;
   --bg5:  #2E3449;
 
+  /* Nav / Mobile Menu */
+  --nav-bg: rgba(12, 14, 21, 0.82);
+  --nav-border: rgba(46, 52, 73, 0.7);
+  --mobile-bg: rgba(12, 14, 21, 0.97);
+
   /* Gold (Сак) */
   --gold:  #C4862A;
   --gold2: #E0A840;
@@ -59,6 +64,11 @@ body.light-theme {
   --text2: #7A5C28;
   --text3: #A08050;
   --bg-rgb: 244, 237, 216;
+
+  /* Nav / Mobile Menu */
+  --nav-bg: rgba(244, 237, 216, 0.82);
+  --nav-border: rgba(184, 168, 120, 0.4);
+  --mobile-bg: rgba(244, 237, 216, 0.97);
 
   /* Gradients for light theme */
   --grad-gold:    linear-gradient(135deg, #8A5810, #AA7020);
@@ -246,9 +256,9 @@ header.nav {
   padding: 26px 0;
 }
 header.nav.solid {
-  background: rgba(12,14,21,0.82);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(46,52,73,0.7);
+  border-bottom: 1px solid var(--nav-border);
   padding: 16px 0;
 }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
@@ -260,6 +270,11 @@ header.nav.solid {
   align-self: center;
   transition: transform 0.4s var(--ease);
   object-fit: contain;
+}
+.brand .logo-mark path,
+.brand .logo-mark line {
+  stroke: var(--gold);
+  transition: stroke 0.4s var(--ease);
 }
 .brand .logo-light { display: none; }
 body.light-theme .brand .logo-dark { display: none; }
@@ -318,7 +333,7 @@ body.light-theme .brand .logo-light { display: block; }
 /* Mobile menu */
 .mobile-menu {
   position: fixed; inset: 0; z-index: 850;
-  background: rgba(12,14,21,0.97); backdrop-filter: blur(8px);
+  background: var(--mobile-bg); backdrop-filter: blur(8px);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 28px; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease);
 }
@@ -755,13 +770,23 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
   transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, fill 0.5s ease, stroke 0.5s ease, box-shadow 0.5s ease !important;
 }
 
-/* Temporarily disabled reduced-motion override to force animations
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-  .reveal { opacity: 1 !important; transform: none !important; }
-  #loader { display: none !important; }
-  body.loading { overflow: auto; height: auto; }
-  .hero-rule { width: 100% !important; }
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+.pagination-controls {
+  display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 40px;
 }
-*/
+.pagination-btn {
+  background: var(--bg2); border: 1px solid var(--bg5); color: var(--text2);
+  padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: var(--mono);
+  font-size: 0.85rem; transition: all 0.3s var(--ease);
+}
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--gold); color: var(--gold); background: rgba(196,134,42,0.06);
+}
+.pagination-btn.active {
+  background: var(--gold); color: var(--bg); border-color: var(--gold);
+}
+.pagination-btn:disabled {
+  opacity: 0.4; cursor: not-allowed;
+}

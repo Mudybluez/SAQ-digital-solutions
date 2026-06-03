@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Кейс · SAQ Digital Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/styles.css" />
+<link rel="stylesheet" href="/css/case.css" />
+<script>
+  (function () {
+    const t = localStorage.getItem("theme");
+    if (t === "light" || (!t && window.matchMedia("(prefers-color-scheme: light)").matches)) {
+      document.documentElement.classList.add("light-theme");
+      document.addEventListener("DOMContentLoaded", () => document.body.classList.add("light-theme"));
+    }
+  })();
+</script>
+</head>
+<body class="loading">
+
+<div id="loader">
+<svg class="mark" viewBox="0 0 100 100" fill="none">
+<path id="ld1" d="M30 26 L54 50 L30 74" stroke-linecap="round" stroke-linejoin="round" />
+<line id="ld2" x1="50" y1="50" x2="78" y2="50" stroke-linecap="round" />
+</svg>
+<div class="lbl">SAQ · BUILT SHARP</div>
+</div>
+
+<header class="nav" id="nav">
+<div class="wrap nav-inner">
+<a class="brand" href="/" data-cursor>
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span><span class="ds">Digital Solutions</span>
+</a>
+<nav class="nav-links">
+<a href="/#services" data-cursor>Услуги</a>
+<a href="/#portfolio" data-cursor>Работы</a>
+<a href="/#process" data-cursor>Процесс</a>
+<a href="/#pricing" data-cursor>Цены</a>
+<a href="/#contact" data-cursor>Контакт</a>
+</nav>
+<button class="theme-toggle" id="themeToggle" aria-label="Переключить тему" data-cursor>
+  <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+  </svg>
+  <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+  </svg>
+</button>
+<button class="btn-outline" data-cursor onclick="location.href='/#contact'"><span>Обсудить проект</span></button>
+<button class="nav-toggle" id="navToggle" aria-label="Меню"><span></span><span></span><span></span></button>
+</div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="/#services">Услуги</a>
+<a href="/#portfolio">Работы</a>
+<a href="/#process">Процесс</a>
+<a href="/#pricing">Цены</a>
+<a href="/#contact">Контакт</a>
+</div>
+
+<!-- ============ DYNAMIC CASE STUDY HOLDER ============ -->
+<main id="caseContent">
+  <!-- Dynamic sections injected here -->
+</main>
+
+<footer class="site-foot">
+<div class="foot-rule"></div>
+<div class="wrap">
+<div class="foot-inner">
+<div class="foot-brand">
+<a class="brand" href="/">
+<svg class="logo-mark" viewBox="0 0 100 100" fill="none">
+<path d="M30 24 L56 50 L30 76" stroke="#C4862A" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="52" y1="50" x2="82" y2="50" stroke="#C4862A" stroke-width="8" stroke-linecap="round"/>
+</svg>
+<span class="saq">SAQ</span><span class="ds">Digital Solutions</span>
+</a>
+<div class="foot-tag">Built sharp.</div>
+</div>
+<div class="foot-col"><h4>Навигация</h4>
+<a href="/#services">Услуги</a><a href="/#portfolio">Работы</a><a href="/#process">Процесс</a><a href="/#pricing">Цены</a></div>
+<div class="foot-col"><h4>Контакт</h4>
+<a href="https://t.me/malayev_yerkanat">Telegram</a><a href="/#contact">Обсудить проект</a></div>
+</div>
+<div class="foot-legal">
+<span class="legal-txt">SAQ Creative Agency • ИП • Казахстан, Астана • 2026</span>
+<span class="lang">RU</span>
+</div>
+</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+  (async function () {
+    const slug = window.location.pathname.split("/").pop();
+    const caseContent = document.getElementById("caseContent");
+
+    try {
+      // 1. Fetch current project
+      const res = await fetch(`/api/projects/${slug}`);
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || "Проект не найден.");
+
+      const p = data.project;
+
+      // Update meta titles
+      document.title = `${p.title} — Кейс · SAQ Digital Solutions`;
+
+      // 2. Fetch all projects to calculate "Next Case" link
+      let nextCaseHtml = "";
+      try {
+        const listRes = await fetch("/api/projects");
+        const listData = await listRes.json();
+        if (listRes.ok && listData.ok && listData.projects.length > 0) {
+          const list = listData.projects;
+          const idx = list.findIndex(item => item.slug === slug);
+          // Get next project, loop back to first if it's the last one
+          const nextProject = list[(idx + 1) % list.length];
+          if (nextProject && nextProject.slug !== slug) {
+            nextCaseHtml = `Следующий кейс → <a href="/work/${nextProject.slug}">${nextProject.title}</a>`;
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load next case:", err);
+      }
+
+      // Generate HTML for tags
+      const tagsHtml = p.tags.map(t => `<span>${t}</span>`).join("");
+
+      // Generate visual (image or placeholder gradient)
+      let heroVisualHtml = "";
+      let overviewVisualHtml = "";
+      if (p.image.startsWith("/") || p.image.startsWith("http")) {
+        heroVisualHtml = `<div class="case-hero-visual" style="background-image: url('${p.image}'); background-size: cover; background-position: center; opacity: 0.25; position: absolute; inset: 0; z-index: 1;"></div>`;
+        overviewVisualHtml = `<div class="case-visual reveal"><div class="ph-grid" style="background-image: url('${p.image}'); background-size: cover; background-position: center; opacity: 0.5;"></div><span class="vlabel">${p.category}</span></div>`;
+      } else {
+        heroVisualHtml = `<div class="case-hero-visual" data-grad="${p.image}" style="position: absolute; inset: 0; z-index: 1; opacity: 0.18;"></div>`;
+        overviewVisualHtml = `<div class="case-visual reveal"><div class="ph-grid" data-grad="${p.image}"></div><span class="vlabel">${p.category}</span></div>`;
+      }
+
+      // Generate optional website link button
+      let externalLinkBtnHtml = "";
+      if (p.link) {
+        externalLinkBtnHtml = `<a class="btn-gold" href="${p.link}" target="_blank" data-cursor style="margin-top: 24px;">Перейти на сайт<span class="arrow">→</span></a>`;
+      }
+
+      // Generate Facts grid
+      const factsHtml = Object.entries(p.facts).map(([k, v]) => `
+        <div class="fr"><span class="fk">${k}</span><span class="fv">${v}</span></div>
+      `).join("");
+
+      // Generate Solution points
+      const pointsHtml = p.solution_points.map(pt => `<li>${pt}</li>`).join("");
+
+      // Generate Results stats
+      const statsHtml = p.results.map(st => `
+        <div class="stat reveal"><div class="num">${st.num}</div><div class="lbl">${st.lbl}</div></div>
+      `).join("");
+
+      // Generate Interface screenshots/gallery
+      let screensHtml = "";
+      if (p.screens && p.screens.length > 0) {
+        const screensList = p.screens.map(scr => {
+          if (scr.image) {
+            return `<div class="g reveal"><div class="ph-grid" style="background-image: url('${scr.image}'); background-size: cover; background-position: center;"></div></div>`;
+          } else {
+            return `<div class="g reveal" data-grad="${scr.grad || p.image}"><div class="ph-grid"></div></div>`;
+          }
+        }).join("");
+
+        screensHtml = `
+          <section class="case-section" id="gallery">
+            <div class="wrap">
+              <div class="head-block"><span class="h-eyebrow">Экраны</span><h2 class="section-title">Интерфейс</h2></div>
+              <div class="gal-grid">
+                ${screensList}
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      // Assemble all blocks
+      caseContent.innerHTML = `
+        <!-- Case Hero -->
+        <section id="case-hero" style="position: relative; overflow: hidden;">
+          ${heroVisualHtml}
+          <div class="wrap" style="position: relative; z-index: 2;">
+            <span class="case-cat">${p.category}</span>
+            <h1 class="case-title">${p.title}</h1>
+            <p class="case-sub">${p.description}</p>
+            <div class="case-tags">
+              ${tagsHtml}
+            </div>
+            ${externalLinkBtnHtml}
+          </div>
+        </section>
+
+        <!-- Overview -->
+        <section class="case-section" id="overview">
+          <div class="wrap">
+            ${overviewVisualHtml}
+          </div>
+          <div class="wrap" style="margin-top: 64px">
+            <div class="overview-grid">
+              <p class="lead reveal">${p.overview}</p>
+              <div class="facts reveal">
+                ${factsHtml}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Challenge & Solution -->
+        <section class="case-section cs-block" id="challenge">
+          <div class="wrap">
+            <div class="cs-grid">
+              <div class="cs-cell reveal">
+                <h3>Задача<span class="dot">.</span></h3>
+                <p>${p.challenge}</p>
+              </div>
+              <div class="cs-cell reveal">
+                <h3>Решение<span class="dot">.</span></h3>
+                <p>${p.solution}</p>
+                <ul>
+                  ${pointsHtml}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Results -->
+        <section class="case-section" id="results">
+          <div class="wrap">
+            <div class="head-block" style="margin-bottom: 0; text-align: center">
+              <span class="h-eyebrow" style="justify-content: center">Результат</span>
+              <h2 class="section-title">${p.results_title}</h2>
+            </div>
+            <div class="res-stats stats">
+              ${statsHtml}
+            </div>
+          </div>
+        </section>
+
+        <!-- Interface screens (optional) -->
+        ${screensHtml}
+
+        <!-- Call to Action -->
+        <section class="case-section" id="case-cta">
+          <div class="wrap">
+            <div class="case-cta-box reveal">
+              <h2>Похожая задача?</h2>
+              <p>Опишите проект — вернёмся с конкретикой: что сделаем, за сколько и в какой срок.</p>
+              <div class="case-cta-actions">
+                <a class="btn-gold" href="/#contact" data-cursor>Обсудить проект<span class="arrow">→</span></a>
+                <a class="btn-ghost" href="/#portfolio" data-cursor>Другие работы</a>
+              </div>
+              <div class="next-case" id="nextCaseContainer">${nextCaseHtml}</div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      // 3. Inject scripts.js dynamically to boot animations and toggle theme correctly
+      const script = document.createElement("script");
+      script.src = "/js/main.js";
+      document.body.appendChild(script);
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("loader")?.remove();
+      caseContent.innerHTML = `
+        <section class="case-section" style="min-height: 50vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+          <div class="wrap">
+            <h1 style="color: var(--danger); font-size: 2.5rem; margin-bottom: 16px;">Упс! Произошла ошибка</h1>
+            <p style="color: var(--text2); margin-bottom: 32px;">${err.message || "Не удалось загрузить данные кейса."}</p>
+            <a class="btn-gold" href="/">На главную</a>
+          </div>
+        </section>
+      `;
+    }
+  })();
+</script>
+</body>
+</html>

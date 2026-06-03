@@ -8,7 +8,10 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "tg:chatid": "node server/tg.js chatid",
-    "tg:test": "node server/tg.js test"
+    "tg:test": "node server/tg.js test",
+    "docker:up": "docker-compose up -d --build",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "engines": {
     "node": ">=18"

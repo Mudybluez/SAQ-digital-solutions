@@ -1,0 +1,77 @@
+services:
+  gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:80"
+    depends_on:
+      - frontend
+      - leads
+      - portfolio
+    restart: always
+
+  frontend:
+    build: ./frontend
+    environment:
+      - PORT=3003
+    volumes:
+      - ./frontend/public:/app/public
+    restart: always
+
+  leads:
+    build: ./services/leads-service
+    environment:
+      - PORT=3001
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
+    depends_on:
+      db:
+        condition: service_healthy
+      notifications:
+        condition: service_started
+    restart: always
+
+  portfolio:
+    build: ./services/portfolio-service
+    environment:
+      - PORT=3002
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - portfolio-uploads:/app/uploads
+    restart: always
+
+  notifications:
+    build: ./services/notifications-service
+    environment:
+      - PORT=3004
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - TELEGRAM_TOPIC_ID=${TELEGRAM_TOPIC_ID}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - LEAD_EMAIL_TO=${LEAD_EMAIL_TO}
+    restart: always
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=saq_db
+      - POSTGRES_USER=saq_user
+      - POSTGRES_PASSWORD=saq_pass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saq_user -d saq_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+volumes:
+  postgres-data:
+  portfolio-uploads:

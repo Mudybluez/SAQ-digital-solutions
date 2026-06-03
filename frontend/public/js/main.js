@@ -70,6 +70,113 @@
     });
   }
 
+  /* ---------------- PORTFOLIO DYNAMIC ---------------- */
+  async function initPortfolio() {
+    const grid = document.getElementById("workGrid");
+    const pagContainer = document.getElementById("portfolioPagination");
+    if (!grid) return;
+
+    try {
+      const res = await fetch("/api/projects");
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || "Не удалось загрузить проекты");
+
+      const projects = data.projects;
+      if (projects.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text2); padding: 40px 0;">Проектов пока нет.</div>`;
+        return;
+      }
+
+      const limit = 4;
+      let currentPage = 1;
+      const totalPages = Math.ceil(projects.length / limit);
+
+      function renderPage(page) {
+        currentPage = page;
+        const start = (page - 1) * limit;
+        const end = start + limit;
+        const pageProjects = projects.slice(start, end);
+
+        grid.innerHTML = pageProjects.map(project => {
+          let bgStyle = "";
+          let dataGrad = "";
+          if (project.image.startsWith("/") || project.image.startsWith("http")) {
+            bgStyle = `background-image: url('${project.image}'); background-size: cover; background-position: center;`;
+          } else {
+            dataGrad = `data-grad="${project.image}"`;
+          }
+
+          const tagsHtml = project.tags.map(t => `<span>${t}</span>`).join("");
+
+          return `
+            <a class="h-card reveal" href="/work/${project.slug}" data-cursor>
+              <div class="shot">
+                <div class="ph-grid" ${dataGrad} style="${bgStyle}"></div>
+                <div class="kind">${project.category}</div>
+                <div class="ovl"></div>
+                <span class="card-open">Открыть кейс →</span>
+              </div>
+              <div class="meta">
+                <div class="pname">${project.title}</div>
+                <div class="pdesc">${project.description}</div>
+                <div class="tags">${tagsHtml}</div>
+              </div>
+            </a>
+          `;
+        }).join("");
+
+        renderControls();
+
+        // Animate portfolio cards only
+        if (!REDUCED && window.gsap) {
+          // Kill previous triggers inside workGrid to prevent conflict/leaks
+          ScrollTrigger.getAll().forEach(st => {
+            if (st.trigger && st.trigger.closest && st.trigger.closest("#workGrid")) {
+              st.kill();
+            }
+          });
+
+          gsap.utils.toArray("#workGrid .reveal").forEach((el) => {
+            gsap.to(el, {
+              y: 0, opacity: 1, duration: 0.9, ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 86%" },
+            });
+          });
+        }
+        if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+      }
+
+      function renderControls() {
+        if (totalPages <= 1) {
+          pagContainer.innerHTML = "";
+          return;
+        }
+
+        let buttons = [];
+        buttons.push(`<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="window.setPortfolioPage(${currentPage - 1})">← Назад</button>`);
+
+        for (let i = 1; i <= totalPages; i++) {
+          buttons.push(`<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="window.setPortfolioPage(${i})">${i}</button>`);
+        }
+
+        buttons.push(`<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="window.setPortfolioPage(${currentPage + 1})">Вперед →</button>`);
+
+        pagContainer.innerHTML = buttons.join("");
+      }
+
+      window.setPortfolioPage = (page) => {
+        renderPage(page);
+        document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" });
+      };
+
+      renderPage(1);
+
+    } catch (err) {
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--danger); padding: 40px 0;">Ошибка загрузки портфолио.</div>`;
+      console.error(err);
+    }
+  }
+
   /* ---------------- HERO PARTICLES ---------------- */
   function initParticles() {
     const canvas = document.getElementById("particles");
@@ -309,12 +416,13 @@
   }
 
   /* ---------------- BOOT ---------------- */
-  function boot() {
+  async function boot() {
     splitChars();
     initNav();
     initTheme();
     initParticles();
     initReveals();
+    await initPortfolio();
     initCarousel();
     initForm();
     runLoader();
