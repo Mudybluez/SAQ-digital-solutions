@@ -199,7 +199,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .section-title {
-  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  font-size: clamp(1.8rem, 5.5vw, 4.6rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 0.98;
@@ -384,7 +384,7 @@ body.light-theme #hero .hero-bg {
 }
 
 .hero-h1 {
-  font-size: clamp(3rem, 9.4vw, 8rem);
+  font-size: clamp(2.2rem, 9.4vw, 8rem);
   line-height: 0.9; letter-spacing: -0.05em; margin-bottom: 26px;
 }
 .hero-h1 .line { display: block; overflow: hidden; }
@@ -654,7 +654,7 @@ body.light-theme #hero .hero-bg {
 }
 .contact-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
 .contact-h {
-  font-size: clamp(3rem, 9vw, 7.5rem); font-weight: 900; line-height: 0.96; letter-spacing: -0.05em;
+  font-size: clamp(2rem, 9vw, 7.5rem); font-weight: 900; line-height: 0.96; letter-spacing: -0.05em;
 }
 .contact-h .l { display: block; }
 .contact-h .l3 { color: var(--gold); }
@@ -751,11 +751,15 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
   .ptable { overflow-x: auto; }
   .ptable .prow { min-width: 640px; }
 }
+@media (max-width: 768px) {
+  .stats { grid-template-columns: 1fr; gap: 24px; }
+}
 @media (max-width: 600px) {
   .wrap { padding: 0 20px; }
   .stats { grid-template-columns: 1fr; }
   footer .foot-inner { grid-template-columns: 1fr; }
-  .h-card { width: 86vw; }
+  .h-card { width: 100%; }
+  .h-card .shot { height: 220px; }
   #hero { padding-top: 100px; }
 }
 
