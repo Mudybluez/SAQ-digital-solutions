@@ -60,7 +60,8 @@ app.post("/api/lead", limiter, async (req, res) => {
     const id = await saveLead(lead);
     
     // Decoupled notification microservice call
-    fetch("http://notifications:3004/notify", {
+    const notifyUrl = process.env.NOTIFICATIONS_SERVICE_URL || "http://notifications:3004/notify";
+    fetch(notifyUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lead, id })
