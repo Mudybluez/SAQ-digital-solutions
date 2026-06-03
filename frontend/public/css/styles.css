@@ -142,7 +142,7 @@ html {
   text-rendering: optimizeLegibility;
   /* Firefox Scrollbar Customization */
   scrollbar-width: thin;
-  scrollbar-color: rgba(196, 134, 42, 0.3) var(--bg);
+  scrollbar-color: rgba(196, 134, 42, 0.3) transparent;
 }
 
 /* Custom Scrollbar for Chrome, Safari, Edge, Opera */
@@ -151,7 +151,7 @@ html {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(196, 134, 42, 0.3);
