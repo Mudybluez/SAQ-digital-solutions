@@ -13,6 +13,46 @@
     --admin-border: #222739;
     --admin-text-muted: #A08860;
   }
+
+  /* Login Modal Styling */
+  .login-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(12, 14, 21, 0.96);
+    backdrop-filter: blur(10px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  .login-modal-card {
+    background: var(--admin-card);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 40px 32px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    text-align: center;
+  }
+  .login-modal-header h2 {
+    color: var(--gold);
+    margin: 0 0 8px;
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .login-modal-header p {
+    color: var(--admin-text-muted);
+    font-size: 0.82rem;
+    margin: 0 0 24px;
+    font-family: var(--mono);
+  }
+  .login-error-msg {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    text-align: left;
+    font-family: var(--mono);
+  }
   body.admin-body {
     background: var(--admin-bg);
     color: var(--text);
@@ -454,6 +494,24 @@
   </div>
 </div>
 
+<!-- Admin Login Modal -->
+<div id="loginModal" class="login-modal-overlay" style="display: none;">
+  <div class="login-modal-card">
+    <div class="login-modal-header">
+      <h2>Вход в панель управления</h2>
+      <p>Введите пароль администратора</p>
+    </div>
+    <form id="loginForm" onsubmit="submitLogin(event)">
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label for="adminPassInput" style="display: block; text-align: left; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem;">Пароль</label>
+        <input type="password" id="adminPassInput" placeholder="Введите пароль" required style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--admin-border); color: var(--text); font-size: 1rem;" />
+        <div id="loginError" class="login-error-msg" style="display: none;">Неверный пароль. Попробуйте еще раз.</div>
+      </div>
+      <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-weight: 600;">Войти</button>
+    </form>
+  </div>
+</div>
+
 <script>
   let currentTab = 'leads';
   let allLeads = [];
@@ -463,6 +521,77 @@
   let allProjects = [];
   let projectsPage = 1;
   const projectsLimit = 5;
+
+  // Custom fetch wrapper that handles authentication and session expiration (1 hour TTL)
+  async function adminFetch(url, options = {}) {
+    const password = sessionStorage.getItem('admin_password');
+    const loginTime = sessionStorage.getItem('admin_login_time');
+    
+    // Check if session exists and is under 1 hour old
+    if (!password || !loginTime || (Date.now() - Number(loginTime) > 60 * 60 * 1000)) {
+      sessionStorage.removeItem('admin_password');
+      sessionStorage.removeItem('admin_login_time');
+      showLoginModal();
+      throw new Error('Сессия истекла. Войдите заново.');
+    }
+
+    // Set authentication header
+    if (!options.headers) options.headers = {};
+    options.headers['Authorization'] = 'Basic ' + btoa('admin:' + password);
+
+    const res = await fetch(url, options);
+
+    if (res.status === 401) {
+      sessionStorage.removeItem('admin_password');
+      sessionStorage.removeItem('admin_login_time');
+      showLoginModal();
+      throw new Error('Сессия недействительна. Войдите заново.');
+    }
+
+    return res;
+  }
+
+  function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+    document.getElementById('adminPassInput').focus();
+  }
+
+  async function submitLogin(event) {
+    event.preventDefault();
+    const passInput = document.getElementById('adminPassInput');
+    const errorMsg = document.getElementById('loginError');
+    const password = passInput.value;
+    
+    errorMsg.style.display = 'none';
+
+    try {
+      // Test the password against leads endpoint
+      const res = await fetch('/api/lead/list', {
+        headers: { 'Authorization': 'Basic ' + btoa('admin:' + password) }
+      });
+
+      if (!res.ok) {
+        throw new Error('Неверный пароль');
+      }
+
+      // Save credentials in sessionStorage
+      sessionStorage.setItem('admin_password', password);
+      sessionStorage.setItem('admin_login_time', String(Date.now()));
+      
+      // Hide modal
+      document.getElementById('loginModal').style.display = 'none';
+      passInput.value = '';
+      
+      // Load current tab
+      if (currentTab === 'leads') {
+        loadLeads();
+      } else {
+        loadPortfolio();
+      }
+    } catch (err) {
+      errorMsg.style.display = 'block';
+    }
+  }
 
   // Tabs switching
   function switchTab(tab) {
@@ -489,7 +618,7 @@
     const container = document.getElementById('leadsTableContainer');
     const pagContainer = document.getElementById('leadsPagination');
     try {
-      const res = await fetch('/api/lead/list');
+      const res = await adminFetch('/api/lead/list');
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка загрузки');
 
@@ -619,7 +748,7 @@
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/projects/upload-image', {
+      const res = await adminFetch('/api/projects/upload-image', {
         method: 'POST',
         body: formData
       });
@@ -735,7 +864,7 @@
     const container = document.getElementById('portfolioListContainer');
     const pagContainer = document.getElementById('portfolioListPagination');
     try {
-      const res = await fetch('/api/projects');
+      const res = await adminFetch('/api/projects');
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'Ошибка загрузки');
 
@@ -982,7 +1111,7 @@
     const method = isEdit ? 'PUT' : 'POST';
 
     try {
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -1003,7 +1132,7 @@
     if (!confirm("Вы действительно хотите удалить этот кейс? Это действие необратимо!")) return;
 
     try {
-      const res = await fetch(`/api/projects/${id}`, {
+      const res = await adminFetch(`/api/projects/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
@@ -1018,7 +1147,15 @@
 
   // Boot: default page load
   window.onload = () => {
-    loadLeads();
+    const password = sessionStorage.getItem('admin_password');
+    const loginTime = sessionStorage.getItem('admin_login_time');
+    if (!password || !loginTime || (Date.now() - Number(loginTime) > 60 * 60 * 1000)) {
+      sessionStorage.removeItem('admin_password');
+      sessionStorage.removeItem('admin_login_time');
+      showLoginModal();
+    } else {
+      loadLeads();
+    }
   };
 </script>
 </body>

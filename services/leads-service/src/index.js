@@ -18,7 +18,7 @@ function auth(req, res, next) {
     const [, given] = Buffer.from(encoded, "base64").toString().split(":");
     if (given === pass) return next();
   }
-  res.set("WWW-Authenticate", 'Basic realm="SAQ Admin"');
+  // res.set("WWW-Authenticate", 'Basic realm="SAQ Admin"');
   return res.status(401).send("Требуется авторизация.");
 }
 
