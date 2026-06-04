@@ -99,6 +99,21 @@
 </div>
 </footer>
 
+<!-- ============ LIGHTBOX MODAL ============ -->
+<div id="lightboxModal" class="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Закрыть">&times;</button>
+  <button class="lightbox-arrow lightbox-prev" id="lightboxPrev" aria-label="Назад">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="Детали интерфейса" style="transition: opacity 0.15s ease;">
+  </div>
+  <button class="lightbox-arrow lightbox-next" id="lightboxNext" aria-label="Вперед">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
@@ -278,6 +293,113 @@
       const script = document.createElement("script");
       script.src = "/js/main.js";
       document.body.appendChild(script);
+
+      // Setup Lightbox for interface gallery
+      setupLightbox();
+
+      function setupLightbox() {
+        const modal = document.getElementById("lightboxModal");
+        if (!modal) return;
+
+        const lightboxImg = document.getElementById("lightboxImg");
+        const lightboxCaption = document.getElementById("lightboxCaption");
+        const prevBtn = document.getElementById("lightboxPrev");
+        const nextBtn = document.getElementById("lightboxNext");
+        const closeBtn = document.getElementById("lightboxClose");
+
+        let images = [];
+        let currentIndex = 0;
+
+        // Find all gallery images (we select all .ph-grid inside .gal-grid)
+        const phGrids = Array.from(document.querySelectorAll(".gal-grid .ph-grid"));
+        
+        // Filter those that have an inline style containing url()
+        const imageElements = phGrids.filter(grid => {
+          const bg = grid.style.backgroundImage;
+          return bg && bg.includes("url(");
+        });
+
+        if (imageElements.length === 0) return;
+
+        images = imageElements.map((grid, index) => {
+          const bg = grid.style.backgroundImage;
+          const url = bg.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
+          const caption = `Экраны интерфейса — ${index + 1} из ${imageElements.length}`;
+
+          // Make the grid parent (.g) clickable and show dynamic cursor
+          const parent = grid.closest(".g");
+          if (parent) {
+            parent.style.cursor = "pointer";
+            parent.setAttribute("data-cursor", "");
+            parent.addEventListener("click", () => {
+              openLightbox(index);
+            });
+          }
+
+          return { url, caption };
+        });
+
+        function openLightbox(index) {
+          currentIndex = index;
+          updateLightbox();
+          modal.classList.add("active");
+          document.body.style.overflow = "hidden"; // disable scroll
+        }
+
+        function closeLightbox() {
+          modal.classList.remove("active");
+          document.body.style.overflow = ""; // restore scroll
+        }
+
+        function updateLightbox() {
+          if (currentIndex < 0 || currentIndex >= images.length) return;
+          const imgData = images[currentIndex];
+          
+          lightboxImg.style.opacity = 0;
+          setTimeout(() => {
+            lightboxImg.src = imgData.url;
+            lightboxCaption.textContent = imgData.caption;
+            lightboxImg.onload = () => {
+              lightboxImg.style.opacity = 1;
+            };
+          }, 150);
+
+          if (images.length <= 1) {
+            prevBtn.style.display = "none";
+            nextBtn.style.display = "none";
+          } else {
+            prevBtn.style.display = "flex";
+            nextBtn.style.display = "flex";
+          }
+        }
+
+        function showNext() {
+          currentIndex = (currentIndex + 1) % images.length;
+          updateLightbox();
+        }
+
+        function showPrev() {
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          updateLightbox();
+        }
+
+        closeBtn.addEventListener("click", closeLightbox);
+        nextBtn.addEventListener("click", (e) => { e.stopPropagation(); showNext(); });
+        prevBtn.addEventListener("click", (e) => { e.stopPropagation(); showPrev(); });
+        
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal || e.target.classList.contains("lightbox-content")) {
+            closeLightbox();
+          }
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (!modal.classList.contains("active")) return;
+          if (e.key === "Escape") closeLightbox();
+          if (e.key === "ArrowRight") showNext();
+          if (e.key === "ArrowLeft") showPrev();
+        });
+      }
 
     } catch (err) {
       console.error(err);
