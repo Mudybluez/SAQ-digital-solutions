@@ -144,7 +144,7 @@
       let overviewVisualHtml = "";
       if (p.image.startsWith("/") || p.image.startsWith("http")) {
         heroVisualHtml = `<div class="case-hero-visual" style="background-image: url('${p.image}'); background-size: cover; background-position: center; opacity: 0.25; position: absolute; inset: 0; z-index: 1;"></div>`;
-        overviewVisualHtml = `<div class="case-visual reveal"><div class="ph-grid" style="background-image: url('${p.image}'); background-size: cover; background-position: center; opacity: 0.5;"></div><span class="vlabel">${p.category}</span></div>`;
+        overviewVisualHtml = `<div class="case-visual reveal"><div class="ph-grid" style="background-image: url('${p.image}'); background-size: cover; background-position: center; opacity: 1;"></div><span class="vlabel">${p.category}</span></div>`;
       } else {
         heroVisualHtml = `<div class="case-hero-visual" data-grad="${p.image}" style="position: absolute; inset: 0; z-index: 1; opacity: 0.18;"></div>`;
         overviewVisualHtml = `<div class="case-visual reveal"><div class="ph-grid" data-grad="${p.image}"></div><span class="vlabel">${p.category}</span></div>`;

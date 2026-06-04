@@ -602,6 +602,22 @@ body.light-theme #hero .hero-bg {
   transition: background 0.4s var(--ease);
 }
 .h-card:hover .shot .ovl { background: rgba(var(--bg-rgb), 0.28); }
+
+/* --- Rules for cards with real images --- */
+.h-card.has-image .shot .ph-grid {
+  opacity: 1;
+}
+.h-card.has-image .shot .ovl {
+  background: rgba(var(--bg-rgb), 0.15);
+}
+.h-card.has-image:hover .shot .ovl {
+  background: rgba(var(--bg-rgb), 0);
+}
+.h-card.has-image .shot .kind {
+  background: rgba(12, 14, 21, 0.55);
+  backdrop-filter: blur(4px);
+  color: var(--text);
+}
 .h-card .meta { padding: 26px 28px; position: relative; }
 .h-card .meta .pname { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; transform: translateY(8px); opacity: 0.85; transition: all 0.4s var(--ease); }
 .h-card:hover .meta .pname { transform: translateY(0); opacity: 1; color: var(--gold); }

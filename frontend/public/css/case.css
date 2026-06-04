@@ -58,6 +58,10 @@
 .case-visual .ph-grid[data-grad="gold"]     { background-color: #2a1d10; box-shadow: inset 0 0 300px rgba(196,134,42,0.45); }
 .case-visual .ph-grid[data-grad="horizon"]  { background-color: #20203f; box-shadow: inset 0 0 300px rgba(139,95,196,0.45); }
 .case-visual .ph-grid[data-grad="image"]    { background-image: url("../assets/build-network.jpg"); background-size: cover; background-position: center; }
+.case-visual .ph-grid[style*="background-image"],
+.case-visual .ph-grid[data-grad="image"] {
+  opacity: 1;
+}
 .case-visual .vlabel {
   position: absolute; left: 24px; bottom: 22px; z-index: 2; font-family: var(--mono);
   font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(237,224,196,0.7);
@@ -100,6 +104,9 @@
 .gal-grid .g .ph-grid { position: absolute; inset: 0; opacity: 0.65;
   background-image: linear-gradient(rgba(46,52,73,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(46,52,73,0.5) 1px, transparent 1px);
   background-size: 30px 30px; }
+.gal-grid .g .ph-grid[style*="background-image"] {
+  opacity: 1;
+}
 .gal-grid .g[data-grad="night"]   .ph-grid { background-color: #16213f; box-shadow: inset 0 0 160px rgba(75,122,196,0.4); }
 .gal-grid .g[data-grad="gold"]    .ph-grid { background-color: #2a1d10; box-shadow: inset 0 0 160px rgba(196,134,42,0.4); }
 .gal-grid .g[data-grad="horizon"] .ph-grid { background-color: #20203f; box-shadow: inset 0 0 160px rgba(139,95,196,0.4); }
