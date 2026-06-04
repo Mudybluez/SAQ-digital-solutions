@@ -782,7 +782,15 @@ footer .foot-legal .lang { font-family: var(--mono); font-size: 0.8rem; color: v
   footer .foot-inner { grid-template-columns: 1fr; }
   .h-card { width: 100%; }
   .h-card .shot { height: 220px; }
-  #hero { padding-top: 100px; }
+  #hero { padding-top: 80px; }
+  .hero-badge {
+    font-size: 0.63rem;
+    padding: 6px 14px;
+    margin-bottom: 16px;
+  }
+  .hero-h1 {
+    font-size: clamp(3.8rem, 15vw, 4.4rem);
+  }
 }
 
 /* ============================================================
