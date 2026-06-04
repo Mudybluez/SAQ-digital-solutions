@@ -409,11 +409,69 @@
     form.querySelectorAll("input, textarea").forEach((inp) => inp.addEventListener("input", () => { const f = inp.closest(".field"); if (f) f.classList.remove("invalid"); }));
   }
 
+  /* ---------------- VIDEO BACKGROUND ---------------- */
+  function initVideoBackground() {
+    const videos = [document.getElementById("bgVideoDark"), document.getElementById("bgVideoLight")];
+    const videoContainer = document.querySelector(".video-bg-container");
+    if (!videoContainer) return;
+
+    if (REDUCED || !window.gsap || !window.ScrollTrigger) {
+      // Reduced motion fallback: loop and play
+      videos.forEach((video) => {
+        if (!video) return;
+        video.loop = true;
+        video.play().catch(() => {});
+      });
+      return;
+    }
+
+    videos.forEach((video) => {
+      if (!video) return;
+      video.pause();
+
+      const initScrub = () => {
+        const dur = video.duration;
+        if (!dur || isNaN(dur)) return;
+
+        // Playback scrub linked to body scroll position
+        gsap.to(video, {
+          currentTime: dur,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "body",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1.2,
+          }
+        });
+      };
+
+      if (video.readyState >= 1) {
+        initScrub();
+      } else {
+        video.addEventListener("loadedmetadata", initScrub);
+      }
+    });
+
+    // Parallax container movement
+    gsap.to(videoContainer, {
+      yPercent: -12,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+      }
+    });
+  }
+
   /* ---------------- BOOT ---------------- */
   async function boot() {
     splitChars();
     initNav();
     initTheme();
+    initVideoBackground();
     initParticles();
     initReveals();
     await initPortfolio();
