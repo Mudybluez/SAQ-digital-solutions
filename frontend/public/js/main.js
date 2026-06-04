@@ -433,14 +433,15 @@
         const dur = video.duration;
         if (!dur || isNaN(dur)) return;
 
-        // Playback scrub linked to body scroll position
+        // Playback scrub linked to document scroll position.
+        // Scrub to dur - 0.05 to avoid triggering the browser's native 'ended' state which resets currentTime.
         gsap.to(video, {
-          currentTime: dur,
+          currentTime: dur - 0.05,
           ease: "none",
           scrollTrigger: {
-            trigger: "body",
-            start: "top top",
-            end: "bottom bottom",
+            trigger: document.documentElement,
+            start: 0,
+            end: "max",
             scrub: 1.2,
           }
         });
@@ -458,9 +459,9 @@
       yPercent: -12,
       ease: "none",
       scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-        end: "bottom bottom",
+        trigger: document.documentElement,
+        start: 0,
+        end: "max",
         scrub: true,
       }
     });
@@ -471,10 +472,10 @@
     splitChars();
     initNav();
     initTheme();
-    initVideoBackground();
     initParticles();
     initReveals();
     await initPortfolio();
+    initVideoBackground(); // Initialize background video AFTER portfolio has loaded and page height is final
     initCarousel();
     initForm();
     runLoader();
