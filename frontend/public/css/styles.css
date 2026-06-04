@@ -427,6 +427,7 @@ body.light-theme #hero .hero-bg {
 
 .hero-ctas { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
 .btn-gold {
+  display: inline-block;
   background: var(--grad-gold); color: var(--bg); font-weight: 600;
   padding: 15px 30px; border-radius: 12px; font-size: 1rem; letter-spacing: 0.01em;
   position: relative; overflow: hidden; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
@@ -436,6 +437,7 @@ body.light-theme #hero .hero-bg {
 .btn-gold:hover .arrow { transform: translateX(5px); }
 
 .btn-ghost {
+  display: inline-block;
   border: 1px solid var(--bg5); color: var(--text); padding: 15px 28px;
   border-radius: 12px; font-size: 1rem; font-weight: 500;
   transition: border-color 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);

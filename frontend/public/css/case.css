@@ -35,7 +35,9 @@
 
 .case-title { font-size: clamp(2.8rem, 8vw, 6.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
 .case-title .char { display: inline-block; will-change: transform; }
-.case-tagline { color: var(--text2); font-size: clamp(1.05rem, 1.7vw, 1.35rem); max-width: 54ch; margin-top: 22px; line-height: 1.55; }
+.case-sub { color: var(--text2); font-size: clamp(1.05rem, 1.7vw, 1.35rem); max-width: 54ch; margin-top: 22px; line-height: 1.55; }
+.case-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; margin-bottom: 8px; }
+.case-tags span { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--text2); border: 1px solid var(--bg5); padding: 4px 10px; border-radius: 6px; background: rgba(19, 22, 32, 0.4); }
 .hero-rule { height: 1px; background: var(--cream); opacity: 0.35; width: 0; margin: 30px 0; }
 
 .case-meta { display: flex; flex-wrap: wrap; gap: 48px; margin-top: 8px; }
