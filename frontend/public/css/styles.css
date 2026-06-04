@@ -273,13 +273,13 @@ header.nav {
   position: fixed; top: 0; left: 0; width: 100%; z-index: 900;
   transition: background 0.4s var(--ease), border-color 0.4s var(--ease), padding 0.4s var(--ease);
   border-bottom: 1px solid transparent;
-  padding: 26px 0;
+  padding: calc(26px + env(safe-area-inset-top, 0px)) 0 26px;
 }
 header.nav.solid {
   background: var(--nav-bg);
   backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--nav-border);
-  padding: 16px 0;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 0 16px;
 }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; }
@@ -356,6 +356,7 @@ body.light-theme .brand .logo-light { display: block; }
   background: var(--mobile-bg); backdrop-filter: blur(8px);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 28px; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease);
+  padding-top: calc(28px + env(safe-area-inset-top, 0px));
 }
 .mobile-menu.open { opacity: 1; pointer-events: auto; }
 .mobile-menu a { font-size: 1.8rem; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
