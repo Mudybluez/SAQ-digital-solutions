@@ -561,7 +561,7 @@ body.light-theme #hero .hero-bg {
 }
 .h-card {
   background: var(--bg2); border: 1px solid var(--bg5); border-radius: 22px; overflow: hidden;
-  position: relative; backdrop-filter: blur(12px);
+  position: relative; will-change: transform;
   transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .h-card:hover { transform: translateY(-6px); border-color: rgba(196,134,42,0.45); box-shadow: 0 0 40px rgba(196,134,42,0.14); }
@@ -576,6 +576,7 @@ body.light-theme #hero .hero-bg {
   position: absolute;
   inset: 0;
   opacity: 0.5;
+  will-change: transform;
   transition: transform 0.8s var(--ease);
 }
 .h-card:hover .shot .ph-grid {
