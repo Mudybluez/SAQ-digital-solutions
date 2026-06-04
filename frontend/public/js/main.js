@@ -6,6 +6,7 @@
   "use strict";
   const REDUCED = false;
   const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let currentScrollProgress = 0;
 
   if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
 
@@ -56,6 +57,8 @@
       localStorage.setItem("theme", isLight ? "light" : "dark");
       
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+      
+      updateActiveVideoFrame(); // Sync new active theme video frame instantly
       
       setTimeout(() => {
         document.documentElement.classList.remove("theme-transition");
@@ -195,16 +198,25 @@
       mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
     });
+    let isIntersecting = true;
+    if (window.IntersectionObserver) {
+      const observer = new IntersectionObserver((entries) => {
+        isIntersecting = entries[0].isIntersecting;
+      }, { threshold: 0 });
+      observer.observe(hero);
+    }
     function frame() {
-      ctx.clearRect(0, 0, w, h);
-      tx += (mouseX - tx) * 0.05; ty += (mouseY - ty) * 0.05;
-      for (const p of parts) {
-        p.y += p.vy; if (p.y < -4) { p.y = h + 4; p.x = Math.random() * w; }
-        const ox = tx * 30 * p.depth, oy = ty * 18 * p.depth;
-        ctx.beginPath();
-        ctx.arc(p.x + ox, p.y + oy, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(196,134,42,${p.a * p.depth})`;
-        ctx.fill();
+      if (isIntersecting) {
+        ctx.clearRect(0, 0, w, h);
+        tx += (mouseX - tx) * 0.05; ty += (mouseY - ty) * 0.05;
+        for (const p of parts) {
+          p.y += p.vy; if (p.y < -4) { p.y = h + 4; p.x = Math.random() * w; }
+          const ox = tx * 30 * p.depth, oy = ty * 18 * p.depth;
+          ctx.beginPath();
+          ctx.arc(p.x + ox, p.y + oy, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(196,134,42,${p.a * p.depth})`;
+          ctx.fill();
+        }
       }
       requestAnimationFrame(frame);
     }
@@ -411,6 +423,17 @@
   }
 
   /* ---------------- VIDEO BACKGROUND ---------------- */
+  function updateActiveVideoFrame() {
+    const isLight = document.body.classList.contains("light-theme");
+    const activeVideo = isLight ? document.getElementById("bgVideoLight") : document.getElementById("bgVideoDark");
+    if (activeVideo) {
+      const dur = activeVideo.duration;
+      if (dur && !isNaN(dur)) {
+        activeVideo.currentTime = currentScrollProgress * (dur - 0.05);
+      }
+    }
+  }
+
   function initVideoBackground() {
     const videos = [document.getElementById("bgVideoDark"), document.getElementById("bgVideoLight")];
     const videoContainer = document.querySelector(".video-bg-container");
@@ -430,28 +453,31 @@
       if (!video) return;
       video.pause();
 
-      const initScrub = () => {
-        const dur = video.duration;
-        if (!dur || isNaN(dur)) return;
-
-        // Playback scrub linked to document scroll position.
-        // Scrub to dur - 0.05 to avoid triggering the browser's native 'ended' state which resets currentTime.
-        gsap.to(video, {
-          currentTime: dur - 0.05,
-          ease: "none",
-          scrollTrigger: {
-            trigger: document.documentElement,
-            start: 0,
-            end: "max",
-            scrub: 1.2,
-          }
-        });
+      const onMetadata = () => {
+        updateActiveVideoFrame();
       };
-
       if (video.readyState >= 1) {
-        initScrub();
+        onMetadata();
       } else {
-        video.addEventListener("loadedmetadata", initScrub);
+        video.addEventListener("loadedmetadata", onMetadata);
+      }
+    });
+
+    // Single ScrollTrigger to scrub a proxy progress value.
+    // This updates ONLY the active video's currentTime, saving 50% CPU/GPU video decoding power!
+    const proxy = { progress: 0 };
+    gsap.to(proxy, {
+      progress: 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: document.documentElement,
+        start: 0,
+        end: "max",
+        scrub: 1.2,
+        onUpdate: (self) => {
+          currentScrollProgress = self.progress;
+          updateActiveVideoFrame();
+        }
       }
     });
 
