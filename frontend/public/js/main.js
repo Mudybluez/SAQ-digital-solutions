@@ -22,16 +22,10 @@
     };
     if (REDUCED || !window.gsap) { if (loader) loader.remove(); body.classList.remove("loading"); startHero(); return; }
 
-    [document.getElementById("ld1"), document.getElementById("ld2")].forEach((el) => {
-      if (!el) return;
-      const len = el.getTotalLength();
-      el.style.strokeDasharray = len; el.style.strokeDashoffset = len;
-    });
     const tl = gsap.timeline({ onComplete: finish });
-    tl.to("#ld1", { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" })
-      .to("#ld2", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, "-=0.15")
-      .to("#loader .lbl", { opacity: 1, duration: 0.4 }, "-=0.2")
-      .to({}, { duration: 0.45 });
+    tl.from("#loader .mark", { scale: 0.7, opacity: 0, duration: 0.8, ease: "back.out(2)" })
+      .to("#loader .lbl", { opacity: 1, duration: 0.5 }, "-=0.35")
+      .to({}, { duration: 0.5 });
 
     // Failsafe: if rAF is throttled (hidden tab) or anything stalls, never trap the user.
     setTimeout(finish, 2600);
