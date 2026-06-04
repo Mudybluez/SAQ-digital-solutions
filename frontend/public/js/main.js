@@ -160,7 +160,8 @@
 
       window.setPortfolioPage = (page) => {
         renderPage(page);
-        document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" });
+        if (window.lenis) window.lenis.scrollTo("#portfolio");
+        else document.getElementById("portfolio")?.scrollIntoView({ behavior: "smooth" });
       };
 
       renderPage(1);
@@ -467,11 +468,53 @@
     });
   }
 
+  /* ---------------- SMOOTH SCROLL (LENIS) ---------------- */
+  function initSmoothScroll() {
+    // Intercept clicks on links targeting hash anchors or elements with data-scroll-to
+    document.querySelectorAll('a[href^="#"], [data-scroll-to]').forEach(el => {
+      el.addEventListener('click', function(e) {
+        const targetSelector = this.getAttribute('href') || this.getAttribute('data-scroll-to');
+        if (!targetSelector || targetSelector === '#') return;
+        const target = document.querySelector(targetSelector);
+        if (target) {
+          e.preventDefault();
+          if (window.lenis) {
+            window.lenis.scrollTo(target);
+          } else {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+
+    if (REDUCED || !window.Lenis) return;
+
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+    });
+
+    lenis.on('scroll', () => {
+      if (window.ScrollTrigger) ScrollTrigger.update();
+    });
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+    window.lenis = lenis;
+  }
+
   /* ---------------- BOOT ---------------- */
   async function boot() {
     splitChars();
     initNav();
     initTheme();
+    initSmoothScroll(); // Initialize smooth scroll early so it applies to links/actions
     initParticles();
     initReveals();
     await initPortfolio();
