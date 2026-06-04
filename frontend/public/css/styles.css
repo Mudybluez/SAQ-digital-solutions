@@ -76,6 +76,9 @@ body.light-theme {
   --grad-warrior: linear-gradient(135deg, #8B1A1A, #8A5810);
   --grad-horizon: linear-gradient(135deg, #2E5298, #8B5FC4);
 }
+body.light-theme #hero .hero-bg::after {
+  background: none !important;
+}
 
 /* Theme Toggle button */
 .theme-toggle {
@@ -604,6 +607,17 @@ body.light-theme #hero .hero-bg {
   transition: background 0.4s var(--ease);
 }
 .h-card:hover .shot .ovl { background: rgba(var(--bg-rgb), 0.28); }
+
+/* If the card contains a real image, remove the heavy darkening overlay and make the image sharp and fully opaque */
+.h-card .shot:has(.ph-grid[style*="background-image"]) .ph-grid {
+  opacity: 1;
+}
+.h-card .shot:has(.ph-grid[style*="background-image"]) .ovl {
+  background: rgba(var(--bg-rgb), 0.12);
+}
+.h-card:hover .shot:has(.ph-grid[style*="background-image"]) .ovl {
+  background: transparent;
+}
 .h-card .meta { padding: 26px 28px; position: relative; }
 .h-card .meta .pname { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; transform: translateY(8px); opacity: 0.85; transition: all 0.4s var(--ease); }
 .h-card:hover .meta .pname { transform: translateY(0); opacity: 1; color: var(--gold); }
@@ -850,7 +864,7 @@ body:not(.light-theme) .video-bg-container .video-bg-dark {
   opacity: 0.38;
 }
 body.light-theme .video-bg-container .video-bg-light {
-  opacity: 0.22;
+  opacity: 0.48;
 }
 
 /* Make all main sections transparent to reveal the fixed video background */
