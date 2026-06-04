@@ -490,10 +490,10 @@
     if (REDUCED || !window.Lenis) return;
 
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 0.75, // Lowered duration for a faster, punchier, and more responsive scroll feel
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
       smoothWheel: true,
-      wheelMultiplier: 1.0,
+      wheelMultiplier: 1.1, // Slightly increased scroll distance multiplier for enhanced responsiveness
       touchMultiplier: 1.5,
     });
 
