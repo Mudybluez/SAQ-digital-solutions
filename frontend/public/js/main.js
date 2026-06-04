@@ -100,22 +100,16 @@
         grid.innerHTML = pageProjects.map(project => {
           let bgStyle = "";
           let dataGrad = "";
-          let isImg = false;
           if (project.image.startsWith("/") || project.image.startsWith("http")) {
             bgStyle = `background-image: url('${project.image}'); background-size: cover; background-position: center;`;
-            isImg = true;
           } else {
             dataGrad = `data-grad="${project.image}"`;
-            if (project.image === "image") {
-              isImg = true;
-            }
           }
 
-          const hasImageClass = isImg ? "has-image" : "";
           const tagsHtml = project.tags.map(t => `<span>${t}</span>`).join("");
 
           return `
-            <a class="h-card reveal ${hasImageClass}" href="/work/${project.slug}" data-cursor>
+            <a class="h-card reveal" href="/work/${project.slug}" data-cursor>
               <div class="shot">
                 <div class="ph-grid" ${dataGrad} style="${bgStyle}"></div>
                 <div class="kind">${project.category}</div>
