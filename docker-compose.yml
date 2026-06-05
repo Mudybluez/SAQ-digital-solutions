@@ -21,7 +21,7 @@ services:
     build: ./services/leads-service
     environment:
       - PORT=3001
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
     depends_on:
       db:
@@ -34,7 +34,7 @@ services:
     build: ./services/portfolio-service
     environment:
       - PORT=3002
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
     depends_on:
       db:
