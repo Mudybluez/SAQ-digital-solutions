@@ -22,7 +22,11 @@ services:
     environment:
       - PORT=3001
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
+      - DB_HOST=db
+      - DB_PORT=5432
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
@@ -35,7 +39,11 @@ services:
     environment:
       - PORT=3002
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - DATABASE_URL=postgres://saq_user:saq_pass@db:5432/saq_db
+      - DB_HOST=db
+      - DB_PORT=5432
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     depends_on:
       db:
         condition: service_healthy

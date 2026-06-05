@@ -2,10 +2,13 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-const connectionString = process.env.DATABASE_URL || "postgres://saq_user:saq_pass@db:5432/saq_db";
-
+// Собираем подключение динамически. Если переменных нет - используем дефолты
 const pool = new Pool({
-  connectionString,
+  user: process.env.POSTGRES_USER || 'saq_user',
+  host: process.env.DB_HOST || 'db',
+  database: process.env.POSTGRES_DB || 'saq_db',
+  password: process.env.POSTGRES_PASSWORD || 'saq_pass',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
 });
 
 export async function initDb() {
