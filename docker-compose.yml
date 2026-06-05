@@ -60,9 +60,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      - POSTGRES_DB=saq_db
-      - POSTGRES_USER=saq_user
-      - POSTGRES_PASSWORD=saq_pass
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
