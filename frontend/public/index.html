@@ -296,15 +296,15 @@
 <div class="field"><label for="f-type">Тип проекта</label><select id="f-type" name="type"><option value="landing">Лендинг</option><option value="business">Бизнес-сайт</option><option value="platform">Кастом</option><option value="unknown">Пока не знаю</option></select></div>
 <div class="field"><label for="f-desc">Описание</label><textarea id="f-desc" name="desc" placeholder="Коротко о бизнесе и задаче"></textarea></div>
 <input type="text" name="company" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
-<div class="field checkbox-field" id="consentField">
+<label class="field checkbox-field" id="consentField" for="f-consent">
   <input type="checkbox" id="f-consent" name="consent" required />
-  <div class="checkbox-box">
+  <span class="checkbox-box">
     <svg viewBox="0 0 24 24">
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
-  </div>
-  <span class="checkbox-label">Я даю согласие на <a href="/privacy" target="_blank" data-cursor>обработку персональных данных</a></span>
-</div>
+  </span>
+  <span class="checkbox-label">Я даю согласие на <a href="/privacy" target="_blank" data-cursor onclick="event.stopPropagation()">обработку персональных данных</a></span>
+</label>
 <div class="form-error" id="formError" role="alert"></div>
 <button type="submit" class="btn-submit" data-cursor><span class="bs-label">Отправить заявку</span></button>
 </form>
