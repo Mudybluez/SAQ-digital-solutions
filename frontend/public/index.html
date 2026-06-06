@@ -134,7 +134,7 @@
 <div class="stats">
 <div class="stat"><div class="num" data-count="3"><span class="val">0</span></div><div class="lbl">года в разработке и обучении</div></div>
 <div class="stat"><div class="num" data-count="14">7-<span class="val">0</span><span class="suf"> дней</span></div><div class="lbl">средний срок запуска сайта</div></div>
-<div class="stat"><div class="num" data-count="100"><span class="val">0</span><span class="suf">%</span></div><div class="lbl">гарантия безопасности</div></div>
+<div class="stat"><div class="num" data-count="100"><span class="val">0</span><span class="suf">%</span></div><div class="lbl">прозрачность условий</div></div>
 </div>
 </div>
 </section>
@@ -270,7 +270,7 @@
 <div class="pcell"><span class="price-big">Под запрос</span><br>индивидуально</div>
 </div>
 </div>
-<div class="price-note">Все цены в тенге (₸).</div>
+<div class="price-note">Все цены в тенге (₸). Указанные цены ориентировочны, финальная стоимость определяется договором.</div>
 </div>
 </section>
 
@@ -296,6 +296,15 @@
 <div class="field"><label for="f-type">Тип проекта</label><select id="f-type" name="type"><option value="landing">Лендинг</option><option value="business">Бизнес-сайт</option><option value="platform">Кастом</option><option value="unknown">Пока не знаю</option></select></div>
 <div class="field"><label for="f-desc">Описание</label><textarea id="f-desc" name="desc" placeholder="Коротко о бизнесе и задаче"></textarea></div>
 <input type="text" name="company" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+<div class="field checkbox-field" id="consentField">
+  <input type="checkbox" id="f-consent" name="consent" required />
+  <div class="checkbox-box">
+    <svg viewBox="0 0 24 24">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  </div>
+  <span class="checkbox-label">Я даю согласие на <a href="/privacy" target="_blank" data-cursor>обработку персональных данных</a></span>
+</div>
 <div class="form-error" id="formError" role="alert"></div>
 <button type="submit" class="btn-submit" data-cursor><span class="bs-label">Отправить заявку</span></button>
 </form>
@@ -337,7 +346,11 @@
 </div>
 </div>
 <div class="foot-legal">
-<span class="legal-txt">SAQ Creative Agency • Казахстан, Астана • 2026</span>
+<div class="legal-info">
+  <span class="legal-txt">ИП SAQ Creative Agency • г. Астана</span>
+  <br>
+  <span class="legal-txt">© 2026 SAQ Creative Agency. Все права защищены. | <a href="/privacy" style="text-decoration: underline; color: var(--text2);" data-cursor>Политика конфиденциальности</a></span>
+</div>
 <span class="lang">RU</span>
 </div>
 </div>

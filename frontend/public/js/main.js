@@ -387,8 +387,13 @@
       let valid = true;
       form.querySelectorAll("[required]").forEach((inp) => {
         const field = inp.closest(".field");
-        if (!inp.value.trim()) { field.classList.add("invalid"); valid = false; }
-        else field.classList.remove("invalid");
+        if (inp.type === "checkbox") {
+          if (!inp.checked) { field.classList.add("invalid"); valid = false; }
+          else field.classList.remove("invalid");
+        } else {
+          if (!inp.value.trim()) { field.classList.add("invalid"); valid = false; }
+          else field.classList.remove("invalid");
+        }
       });
       if (!valid) return;
 
@@ -397,6 +402,7 @@
         phone: form.phone.value,
         type: form.type.value,
         desc: form.desc.value,
+        consent: form.consent ? form.consent.checked : false,
         company: form.company ? form.company.value : "",
       };
 
@@ -419,7 +425,10 @@
       }
     });
 
-    form.querySelectorAll("input, textarea").forEach((inp) => inp.addEventListener("input", () => { const f = inp.closest(".field"); if (f) f.classList.remove("invalid"); }));
+    form.querySelectorAll("input, textarea, select").forEach((inp) => {
+      const eventName = inp.type === "checkbox" ? "change" : "input";
+      inp.addEventListener(eventName, () => { const f = inp.closest(".field"); if (f) f.classList.remove("invalid"); });
+    });
   }
 
   /* ---------------- VIDEO BACKGROUND ---------------- */
@@ -535,6 +544,42 @@
     window.lenis = lenis;
   }
 
+  /* ---------------- COOKIE CONSENT BANNER ---------------- */
+  function initCookieBanner() {
+    if (localStorage.getItem("cookie-consent") === "accepted") return;
+
+    const banner = document.createElement("div");
+    banner.className = "cookie-banner";
+    banner.innerHTML = `
+      <div class="cookie-text">
+        Мы используем файлы Cookie для повышения удобства работы с сайтом. Продолжая просматривать сайт, вы соглашаетесь с нашей <a href="/privacy">Политикой конфиденциальности</a>.
+      </div>
+      <div class="cookie-btns">
+        <button class="cookie-btn cookie-btn-close" id="cookieReject" data-cursor>Закрыть</button>
+        <button class="cookie-btn cookie-btn-accept" id="cookieAccept" data-cursor>Принять</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    // Fade in after a slight delay
+    setTimeout(() => banner.classList.add("show"), 2000);
+
+    const acceptBtn = document.getElementById("cookieAccept");
+    const rejectBtn = document.getElementById("cookieReject");
+
+    const dismiss = () => {
+      banner.classList.remove("show");
+      setTimeout(() => banner.remove(), 600);
+    };
+
+    acceptBtn?.addEventListener("click", () => {
+      localStorage.setItem("cookie-consent", "accepted");
+      dismiss();
+    });
+
+    rejectBtn?.addEventListener("click", dismiss);
+  }
+
   /* ---------------- BOOT ---------------- */
   async function boot() {
     splitChars();
@@ -547,6 +592,7 @@
     initVideoBackground(); // Initialize background video AFTER portfolio has loaded and page height is final
     initCarousel();
     initForm();
+    initCookieBanner();
     runLoader();
     if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 400);
   }

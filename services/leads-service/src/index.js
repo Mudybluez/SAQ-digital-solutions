@@ -49,9 +49,14 @@ app.post("/api/lead", limiter, async (req, res) => {
   const contact = clean(body.phone ?? body.contact, 120);
   const type = ALLOWED_TYPES.has(body.type) ? body.type : "unknown";
   const message = clean(body.desc ?? body.message, 2000);
+  const consent = !!body.consent;
 
   if (!name || !contact) {
     return res.status(400).json({ ok: false, error: "Укажите имя и контакт." });
+  }
+
+  if (!consent) {
+    return res.status(400).json({ ok: false, error: "Требуется согласие на обработку персональных данных." });
   }
 
   const lead = { name, contact, type, message, ip: req.ip, user_agent: clean(req.get("user-agent"), 300) };

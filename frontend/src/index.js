@@ -18,6 +18,11 @@ app.get("/admin", (req, res) => {
   res.sendFile(join(publicDir, "admin.html"));
 });
 
+// Privacy Policy route mapping
+app.get("/privacy", (req, res) => {
+  res.sendFile(join(publicDir, "privacy.html"));
+});
+
 // Serve static directory
 app.use(express.static(publicDir));
 
