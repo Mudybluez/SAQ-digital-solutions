@@ -19,7 +19,13 @@ export function ContentProvider({ children }) {
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+    if (typeof document !== 'undefined' && document.startViewTransition) {
+      document.startViewTransition(() => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+      })
+    } else {
+      setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+    }
   }
 
   const fetchContent = async () => {
