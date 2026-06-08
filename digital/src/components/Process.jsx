@@ -1,15 +1,11 @@
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-
-const steps = [
-  { num: '01', title: 'БРИФ',        desc: 'Вы рассказываете о задаче — мы задаём нужные вопросы, чтобы точно понять цели и ожидания.' },
-  { num: '02', title: 'ДИЗАЙН',      desc: 'Создаём макеты в Figma с учётом вашего бренда, аудитории и современных UX-стандартов.' },
-  { num: '03', title: 'РАЗРАБОТКА',  desc: 'Пишем чистый, масштабируемый код. Регулярно демонстрируем прогресс и принимаем правки.' },
-  { num: '04', title: 'ЗАПУСК',      desc: 'Тестируем, деплоим и передаём проект. Обеспечиваем поддержку и доработки после сдачи.' },
-]
+import { useContent } from '../context/ContentContext'
 
 export default function Process() {
   const [ref, inView] = useInView()
+  const { homepageContent } = useContent()
+  const { process } = homepageContent
 
   return (
     <section id="process" className="relative bg-navy">
@@ -23,21 +19,21 @@ export default function Process() {
           className="flex items-center gap-3 text-xs font-bold tracking-[4px] uppercase text-gold mb-4"
         >
           <span className="w-8 h-px bg-gold" />
-          Как мы работаем
+          {process.tag}
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-head text-[clamp(48px,6vw,88px)] leading-[0.95] tracking-[-1px] font-[800] mb-20"
+          className="font-head text-[clamp(48px,6vw,88px)] leading-[0.95] tracking-[-1px] font-[800] mb-20 text-ink"
         >
-          Процесс<br /><span className="text-gold">работы</span>
+          {process.title}
         </motion.h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
-          {steps.map((s, i) => (
+          {process.steps && process.steps.map((s, i) => (
             <motion.div
-              key={s.num}
+              key={s.num || i}
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.12 * i }}

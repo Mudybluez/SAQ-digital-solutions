@@ -1,33 +1,14 @@
 import { motion } from 'framer-motion'
 import { Monitor, Bot, Zap, ArrowRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
+import { useContent } from '../context/ContentContext'
 
-const services = [
-  {
-    num: '01',
-    icon: Monitor,
-    title: 'САЙТЫ',
-    desc: 'Лендинги, корпоративные сайты, интернет-магазины, порталы и SaaS-приложения. Современный дизайн, быстрая загрузка, SEO-оптимизация.',
-    tags: ['Лендинг', 'E-Commerce', 'Web App', 'CRM'],
-  },
-  {
-    num: '02',
-    icon: Bot,
-    title: 'БОТЫ',
-    desc: 'Telegram-боты для бизнеса, клиентского сервиса, автоворонок и внутренних задач. Интеграция с любыми API и платёжными системами.',
-    tags: ['Telegram', 'Автоворонки', 'AI-боты', 'Поддержка'],
-  },
-  {
-    num: '03',
-    icon: Zap,
-    title: 'АВТОМАТИЗАЦИЯ',
-    desc: 'Автоматизируем рутинные процессы: парсинг, рассылки, интеграции, n8n/Make, скрипты и бизнес-логику под ключ.',
-    tags: ['n8n', 'Make', 'Python', 'API'],
-  },
-]
+const iconMap = [Monitor, Bot, Zap]
 
 export default function Services() {
   const [ref, inView] = useInView()
+  const { homepageContent } = useContent()
+  const { services } = homepageContent
 
   return (
     <section id="services" className="relative bg-navy-2 overflow-hidden">
@@ -49,15 +30,15 @@ export default function Services() {
               className="flex items-center gap-3 text-xs font-bold tracking-[4px] uppercase text-gold mb-4"
             >
               <span className="w-8 h-px bg-gold" />
-              Что мы делаем
+              {services.tag}
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-head text-[clamp(48px,6vw,88px)] leading-[0.95] tracking-[-1px] font-[800]"
+              className="font-head text-[clamp(48px,6vw,88px)] leading-[0.95] tracking-[-1px] font-[800] text-ink"
             >
-              Наши<br /><span className="text-gold">услуги</span>
+              {services.title}
             </motion.h2>
           </div>
           <motion.p
@@ -67,17 +48,18 @@ export default function Services() {
             className="text-[17px] text-muted max-w-md leading-[1.7]"
           >
             Полный цикл разработки — от дизайна до поддержки.
-            SAQ Digital System работает с любыми задачами в сфере IT.
+            SAQ Creative Agency строит решения под конкретные цели.
           </motion.p>
         </div>
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-gold/5">
-          {services.map((s, i) => {
-            const Icon = s.icon
+          {services.items && services.items.map((s, i) => {
+            const Icon = iconMap[i % iconMap.length] || Monitor
+            const numStr = String(i + 1).padStart(2, '0')
             return (
               <motion.div
-                key={s.num}
+                key={s.id || i}
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.15 * i }}
@@ -89,7 +71,7 @@ export default function Services() {
 
                 {/* Big number */}
                 <span className="absolute top-4 right-6 font-head text-[88px] leading-none text-gold/6 group-hover:text-gold/12 transition-colors duration-300 select-none pointer-events-none">
-                  {s.num}
+                  {numStr}
                 </span>
 
                 {/* Icon */}
@@ -102,7 +84,7 @@ export default function Services() {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-8">
-                  {s.tags.map(t => (
+                  {s.features && s.features.map(t => (
                     <span key={t} className="text-[11px] font-semibold tracking-[1.5px] uppercase text-gold-dim border border-gold/15 px-3 py-1">
                       {t}
                     </span>

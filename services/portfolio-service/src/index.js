@@ -8,7 +8,9 @@ import {
   getProjectBySlug,
   insertProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  getSettings,
+  upsertSettings
 } from "./db.js";
 
 const app = express();
@@ -200,6 +202,32 @@ app.delete("/api/projects/:id", auth, async (req, res) => {
   } catch (err) {
     console.error("[portfolio] Delete error:", err);
     return res.status(500).json({ ok: false, error: "Не удалось удалить кейс." });
+  }
+});
+
+// Get settings
+app.get("/api/projects/settings/:key", async (req, res) => {
+  try {
+    const val = await getSettings(req.params.key);
+    return res.json({ ok: true, value: val });
+  } catch (err) {
+    console.error("[portfolio] Get settings error:", err);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// Update settings
+app.post("/api/projects/settings/:key", auth, async (req, res) => {
+  try {
+    const { value } = req.body || {};
+    if (value === undefined) {
+      return res.status(400).json({ ok: false, error: "Значение настроек не передано." });
+    }
+    await upsertSettings(req.params.key, value);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("[portfolio] Upsert settings error:", err);
+    return res.status(500).json({ ok: false, error: err.message });
   }
 });
 

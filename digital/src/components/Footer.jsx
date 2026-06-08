@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useContent } from '../context/ContentContext'
 
 export default function Footer() {
+  const { homepageContent } = useContent()
+  const { footer } = homepageContent
+
   return (
     <footer className="bg-navy border-t border-gold/10">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-14">
@@ -13,7 +17,7 @@ export default function Footer() {
               <span className="font-head text-2xl font-[800] tracking-[-0.5px] text-gold">SAQ Digital Systems</span>
             </div>
             <p className="text-[14px] text-muted leading-[1.7] max-w-xs">
-              IT-студия полного цикла. Создаём цифровые продукты, которые работают и приносят результат.
+              {footer.desc}
             </p>
           </div>
 
@@ -40,7 +44,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-t border-gold/10 pt-7">
-          <p className="text-[13px] text-muted">© 2025 SAQ Digital Systems. Все права защищены.</p>
+          <p className="text-[13px] text-muted">{footer.copyright}</p>
           <Link to="/privacy"
              className="text-[13px] text-muted/50 hover:text-muted transition-colors underline underline-offset-2">
             Политика конфиденциальности

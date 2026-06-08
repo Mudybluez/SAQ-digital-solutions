@@ -37,6 +37,15 @@ export async function initDb() {
     `);
     console.log("[portfolio-db] Projects table is ready.");
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        key VARCHAR(255) PRIMARY KEY,
+        value JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("[portfolio-db] Site settings table is ready.");
+
     // Seed default projects if empty
     const checkRes = await client.query("SELECT COUNT(*) as count FROM projects");
     const count = parseInt(checkRes.rows[0].count, 10);
@@ -288,6 +297,21 @@ export async function updateProject(id, project) {
 
 export async function deleteProject(id) {
   await pool.query("DELETE FROM projects WHERE id = $1", [id]);
+}
+
+export async function getSettings(key) {
+  const res = await pool.query("SELECT value FROM site_settings WHERE key = $1", [key]);
+  return res.rows[0] ? res.rows[0].value : null;
+}
+
+export async function upsertSettings(key, value) {
+  const query = `
+    INSERT INTO site_settings (key, value, updated_at)
+    VALUES ($1, $2, CURRENT_TIMESTAMP)
+    ON CONFLICT (key) DO UPDATE
+    SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP
+  `;
+  await pool.query(query, [key, JSON.stringify(value)]);
 }
 
 export default pool;

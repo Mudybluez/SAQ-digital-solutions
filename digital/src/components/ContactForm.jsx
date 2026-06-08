@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
+import { useContent } from '../context/ContentContext'
 
 const PROJECT_TYPES = [
   { value: 'landing', label: 'Лендинг' },
@@ -12,6 +13,8 @@ const PROJECT_TYPES = [
 
 export default function ContactForm() {
   const [ref, inView] = useInView()
+  const { homepageContent } = useContent()
+  const { contact } = homepageContent
 
   const [form, setForm]     = useState({ name: '', contact: '', type: 'landing', desc: '', company: '' })
   const [agreed, setAgreed] = useState(false)
@@ -77,15 +80,15 @@ export default function ContactForm() {
             transition={{ duration: 0.8 }}
           >
             <p className="text-[11px] font-semibold tracking-[4px] uppercase text-gold/70 mb-6">
-              Напишите нам
+              {contact.tag}
             </p>
 
             <h2 className="font-head font-[800] text-[clamp(52px,6vw,100px)] leading-[0.88] tracking-[-2px] text-ink mb-8">
-              Есть<br />задача —<br /><span className="text-gold">давайте.</span>
+              {contact.title}
             </h2>
 
             <p className="text-[16px] text-muted leading-[1.7] max-w-sm mb-10">
-              Опишите проект — вернёмся с конкретикой: что сделаем, за сколько и в какой срок.
+              {contact.subtitle}
             </p>
 
             <div className="space-y-3 text-[14px]">
@@ -131,7 +134,7 @@ export default function ContactForm() {
                 {/* Name */}
                 <div>
                   <label className={labelCls}>Имя</label>
-                  <input type="text" placeholder="Как к вам обращаться"
+                  <input type="text" placeholder={contact.placeholder_name}
                     value={form.name} onChange={set('name')}
                     className={inputCls} />
                 </div>
@@ -139,7 +142,7 @@ export default function ContactForm() {
                 {/* Contact */}
                 <div>
                   <label className={labelCls}>Телефон / Telegram</label>
-                  <input type="text" placeholder="+7 ... или @username"
+                  <input type="text" placeholder={contact.placeholder_contact}
                     value={form.contact} onChange={set('contact')}
                     className={inputCls} />
                 </div>
@@ -161,7 +164,7 @@ export default function ContactForm() {
                  {/* Description */}
                 <div>
                   <label className={labelCls}>Описание</label>
-                  <textarea placeholder="Коротко о бизнесе и задаче"
+                  <textarea placeholder={contact.placeholder_message}
                     rows={4} value={form.desc} onChange={set('desc')}
                     className={`${inputCls} resize-y min-h-[110px]`} />
                 </div>
@@ -183,10 +186,10 @@ export default function ContactForm() {
                     )}
                   </div>
                   <span className="text-[13px] text-muted/70 leading-[1.5]">
-                    Я даю согласие на{' '}
+                    {contact.checkbox_text || 'Я согласен с'}{' '}
                     <Link to="/privacy" target="_blank" rel="noopener"
                        className="text-muted underline underline-offset-2 hover:text-ink transition-colors">
-                      обработку персональных данных
+                      {contact.checkbox_link || 'Политикой конфиденциальности'}
                     </Link>
                   </span>
                 </label>
@@ -197,7 +200,7 @@ export default function ContactForm() {
                 <button type="submit"
                   className="w-full bg-gold text-navy font-head font-[800] text-[17px] tracking-[-0.3px]
                              py-4 hover:bg-gold-glow active:scale-[0.99] transition-all duration-200 mt-2">
-                  Отправить заявку
+                  {contact.submit_btn}
                 </button>
               </form>
             )}

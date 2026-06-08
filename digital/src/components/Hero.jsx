@@ -3,13 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { useParticles } from '../hooks/useParticles.js'
 import EagleLogo from './EagleLogo.jsx'
-
-const stats = [
-  { num: '47+', label: 'Проектов'        },
-  { num: '32+', label: 'Клиентов'        },
-  { num: '3+',  label: 'Года опыта'      },
-  { num: '100%',label: 'Удовлетворённость'},
-]
+import { useContent } from '../context/ContentContext'
 
 const fadeUp = (delay = 0) => ({
   initial:   { opacity: 0, y: 40 },
@@ -20,6 +14,8 @@ const fadeUp = (delay = 0) => ({
 export default function Hero() {
   const canvasRef = useRef(null)
   useParticles(canvasRef)
+  const { homepageContent } = useContent()
+  const { hero, stats } = homepageContent
 
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-navy">
@@ -136,7 +132,7 @@ export default function Hero() {
         <motion.div {...fadeUp(0.2)} className="inline-flex items-center gap-3 border border-gold/20 px-5 py-2 mb-8">
           <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
           <span className="text-xs font-bold tracking-[3px] uppercase text-gold">
-            IT Production Studio
+            {hero.tag}
           </span>
         </motion.div>
 
@@ -146,19 +142,19 @@ export default function Hero() {
             {...fadeUp(0.35)}
             className="block text-[clamp(56px,8.5vw,138px)] font-[800] tracking-[-2px] text-ink"
           >
-            Мы строим
+            {hero.headline_1}
           </motion.span>
           <motion.span
             {...fadeUp(0.48)}
             className="block text-[clamp(56px,8.5vw,138px)] font-[800] tracking-[-2px] text-gold"
           >
-            цифровые
+            {hero.headline_2}
           </motion.span>
           <motion.span
             {...fadeUp(0.60)}
             className="block text-[clamp(56px,8.5vw,138px)] font-[800] tracking-[-2px] text-ink"
           >
-            продукты
+            {hero.headline_3}
           </motion.span>
         </div>
 
@@ -166,8 +162,7 @@ export default function Hero() {
         <motion.p {...fadeUp(0.72)}
           className="text-[17px] text-muted max-w-[500px] leading-[1.7] mb-10"
         >
-          SAQ Digital Systems — команда разработчиков, которая создаёт сайты, боты и автоматизации.
-          От идеи до запуска — быстро, красиво, надёжно.
+          {hero.subtitle}
         </motion.p>
 
         {/* CTA buttons */}
@@ -175,19 +170,19 @@ export default function Hero() {
           <a href="#portfolio"
             className="clip-hex inline-flex items-center gap-2 bg-gold text-navy text-sm font-bold tracking-[1.5px] uppercase px-9 py-4 hover:bg-gold-glow transition-colors duration-200 group"
           >
-            Смотреть работы
+            {hero.cta_primary}
             <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
           </a>
           <a href="#contact"
             className="inline-flex items-center gap-2 border border-gold/25 text-ink text-sm font-medium tracking-[1px] uppercase px-8 py-4 hover:border-gold hover:text-gold transition-all duration-200"
           >
-            Обсудить проект
+            {hero.cta_secondary}
           </a>
         </motion.div>
 
         {/* Stats */}
         <motion.div {...fadeUp(0.92)} className="flex flex-wrap gap-10">
-          {stats.map(s => (
+          {stats && stats.map(s => (
             <div key={s.label}>
               <div className="font-head text-[46px] leading-none text-gold tracking-[2px]">{s.num}</div>
               <div className="text-xs font-medium tracking-[2px] uppercase text-muted mt-1">{s.label}</div>
