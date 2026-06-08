@@ -1,4 +1,5 @@
 import { useEffect, useRef, memo } from 'react'
+import { useContent } from '../context/ContentContext'
 
 /**
  * Рендерит logo.png с удалённым фоном через Canvas API с оптимизированным разрешением,
@@ -6,6 +7,7 @@ import { useEffect, useRef, memo } from 'react'
  */
 const EagleLogo = memo(function EagleLogo({ className, style }) {
   const canvasRef = useRef(null)
+  const { theme } = useContent()
 
   // Константы размеров для рендеринга и тени
   const targetSize = 650
@@ -64,7 +66,7 @@ const EagleLogo = memo(function EagleLogo({ className, style }) {
       oCtx.putImageData(imageData, 0, 0)
 
       // Рендерим тень один раз прямо на основном холсте
-      ctx.shadowColor = 'rgba(232,149,26,0.85)'
+      ctx.shadowColor = theme === 'light' ? 'rgba(138,88,16,0.45)' : 'rgba(232,149,26,0.85)'
       ctx.shadowBlur = shadowBlur
       ctx.shadowOffsetX = 0
       ctx.shadowOffsetY = 0
@@ -72,8 +74,8 @@ const EagleLogo = memo(function EagleLogo({ className, style }) {
       // Рисуем изображение поверх тени
       ctx.drawImage(offscreen, padding, padding)
     }
-    img.src = '/logo.png'
-  }, [])
+    img.src = theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'
+  }, [theme])
 
   // Вычисляем масштаб и отрицательные маргины, чтобы скомпенсировать паддинг тени
   const scaleFactor = (targetSize + padding * 2) / targetSize

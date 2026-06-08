@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useContent } from '../context/ContentContext'
 
 export default function Footer() {
-  const { homepageContent } = useContent()
+  const { homepageContent, theme } = useContent()
   const { footer } = homepageContent
 
   return (
@@ -13,7 +13,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img src="/logo.png" alt="SAQ Digital Systems" className="h-8 w-auto" />
+              <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ Digital Systems" className="h-8 w-auto" />
               <span className="font-head text-2xl font-[800] tracking-[-0.5px] text-gold">SAQ Digital Systems</span>
             </div>
             <p className="text-[14px] text-muted leading-[1.7] max-w-xs">

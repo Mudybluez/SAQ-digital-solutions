@@ -13,7 +13,7 @@ export default function CTA() {
 
       {/* Background logo watermark */}
       <div className="absolute right-[-5%] top-1/2 -translate-y-1/2 w-[55%] pointer-events-none opacity-[0.03] select-none">
-        <img src="/logo.png" alt="" className="w-full" style={{ mixBlendMode: theme === 'light' ? 'multiply' : 'screen' }} />
+        <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="" className="w-full" style={{ mixBlendMode: theme === 'light' ? 'multiply' : 'screen' }} />
       </div>
 
       {/* Gold radial glow */}

@@ -35,7 +35,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <a href="#home" className="flex items-center gap-3 group">
-          <img src="/logo.png" alt="SAQ Digital Systems" className="h-9 w-auto" />
+          <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ Digital Systems" className="h-9 w-auto" />
           <span className="font-head font-[800] text-xl tracking-[-0.5px] text-gold group-hover:text-gold-glow transition-colors leading-none">
             SAQ<br />
             <span className="text-[10px] tracking-[2px] text-gold/70 font-body font-semibold uppercase">Digital Systems</span>

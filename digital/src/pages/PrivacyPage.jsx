@@ -5,7 +5,7 @@ import { useContent } from '../context/ContentContext'
 
 export default function PrivacyPage() {
   const navigate = useNavigate()
-  const { privacyContent } = useContent()
+  const { privacyContent, theme } = useContent()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-navy/90 backdrop-blur-md border-b border-gold/10">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="SAQ" className="h-8 w-auto" />
+            <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ" className="h-8 w-auto" />
             <span className="font-head font-[800] text-lg tracking-[-0.5px] text-gold">
               SAQ<br />
               <span className="text-[10px] tracking-[2px] text-gold/70 font-body font-semibold uppercase">Digital Systems</span>

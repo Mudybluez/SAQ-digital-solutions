@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 import { getProject, projects } from '../data/projects'
+import { useContent } from '../context/ContentContext'
 
 const fadeUp = (delay = 0) => ({
   initial:   { opacity: 0, y: 32 },
@@ -16,6 +17,7 @@ export default function WorkPage() {
   const [p, setP]   = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightbox, setLightbox] = useState(null)
+  const { theme } = useContent()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -90,7 +92,7 @@ export default function WorkPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-navy/90 backdrop-blur-md border-b border-gold/10">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo.png" alt="SAQ" className="h-8 w-auto" />
+            <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ" className="h-8 w-auto" />
             <span className="font-head font-[800] text-lg tracking-[-0.5px] text-gold">
               SAQ<br />
               <span className="text-[10px] tracking-[2px] text-gold/70 font-body font-semibold uppercase">Digital Systems</span>

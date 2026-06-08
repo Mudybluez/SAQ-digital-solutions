@@ -80,7 +80,7 @@ const PREDEFINED_TECHS = [
 
 export default function AdminPage() {
   const navigate = useNavigate()
-  const { homepageContent, privacyContent, refreshContent } = useContent()
+  const { homepageContent, privacyContent, refreshContent, theme } = useContent()
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -405,7 +405,7 @@ export default function AdminPage() {
       <div className="min-h-screen bg-navy flex items-center justify-center p-6 font-body">
         <div className="w-full max-w-[420px] bg-navy-2 border border-gold/15 p-8 rounded-none shadow-2xl">
           <div className="text-center mb-8">
-            <img src="/logo.png" alt="SAQ Logo" className="h-14 w-auto mx-auto mb-4" />
+            <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ Logo" className="h-14 w-auto mx-auto mb-4" />
             <h1 className="font-head font-[800] text-2xl text-gold uppercase tracking-[1px]">SAQ Creative Agency</h1>
             <p className="text-xs text-muted font-mono tracking-[2px] mt-1">Панель управления</p>
           </div>
@@ -449,7 +449,7 @@ export default function AdminPage() {
       {/* ── HEADER ── */}
       <header className="bg-navy-2 border-b border-gold/15 px-6 md:px-12 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <img src="/logo.png" alt="SAQ Logo" className="h-9 w-auto" />
+          <img src={theme === 'light' ? '/assets/digital_logo_light_no_bg.png' : '/assets/digital_logo_dark.png'} alt="SAQ Logo" className="h-9 w-auto" />
           <div>
             <h1 className="font-head font-[800] text-xl text-gold uppercase tracking-[1px] leading-none">SAQ Control Panel</h1>
             <p className="text-[10px] text-muted font-mono tracking-[2px] mt-1">СИСТЕМА УПРАВЛЕНИЯ КОНТЕНТОМ</p>
