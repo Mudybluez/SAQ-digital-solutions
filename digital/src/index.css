@@ -21,8 +21,8 @@
 .animate-ticker      { will-change: transform; }
 .animate-float       { will-change: transform; }
 .animate-glow-pulse  { will-change: transform, opacity; }
-.animate-scan        { will-change: background-position; }
-.animate-beam-sway   { will-change: transform, filter; }
+.animate-scan-line   { will-change: transform; }
+.animate-beam-sway   { will-change: transform, opacity; }
 
 
 @layer utilities {

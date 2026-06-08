@@ -95,10 +95,9 @@ export default function Hero() {
         />
         {/* Scan line */}
         <div
-          className="absolute inset-0 animate-scan pointer-events-none"
+          className="absolute left-0 right-0 h-[120px] pointer-events-none animate-scan-line"
           style={{
-            background: 'linear-gradient(180deg, transparent 0%, rgba(232,149,26,0.07) 49%, rgba(232,149,26,0.13) 50%, rgba(232,149,26,0.07) 51%, transparent 100%)',
-            backgroundSize: '100% 200%',
+            background: 'linear-gradient(180deg, transparent, rgba(232,149,26,0.08) 40%, rgba(232,149,26,0.18) 50%, rgba(232,149,26,0.08) 60%, transparent)',
           }}
         />
 
@@ -116,7 +115,6 @@ export default function Hero() {
           <EagleLogo
             className="w-full select-none"
             style={{
-              filter: 'drop-shadow(0 0 35px rgba(232,149,26,0.85))',
               willChange: 'transform',
               transform: 'translate3d(0,0,0)',
               backfaceVisibility: 'hidden'

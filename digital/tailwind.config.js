@@ -20,33 +20,33 @@ export default {
       animation: {
         'float':      'float 6s ease-in-out infinite',
         'glow-pulse': 'glowPulse 4s ease-in-out infinite',
-        'scan':       'scan 4s linear infinite',
+        'scan-line':  'scanLine 4s linear infinite',
         'ticker':     'ticker 28s linear infinite',
         'beam-sway':  'beamSway 18s ease-in-out infinite',
       },
       keyframes: {
         float: {
-          '0%,100%': { transform: 'translateY(0px) rotate(0deg)' },
-          '40%':     { transform: 'translateY(-20px) rotate(1.5deg)' },
-          '70%':     { transform: 'translateY(-8px) rotate(-1deg)' },
+          '0%,100%': { transform: 'translate3d(0, 0px, 0) rotate(0deg)' },
+          '40%':     { transform: 'translate3d(0, -20px, 0) rotate(1.5deg)' },
+          '70%':     { transform: 'translate3d(0, -8px, 0) rotate(-1deg)' },
         },
         glowPulse: {
-          '0%,100%': { opacity: '0.6', transform: 'scale(1)' },
-          '50%':     { opacity: '1',   transform: 'scale(1.2)' },
+          '0%,100%': { opacity: '0.6', transform: 'scale(1) translate3d(0,0,0)' },
+          '50%':     { opacity: '1',   transform: 'scale(1.2) translate3d(0,0,0)' },
         },
-        scan: {
-          '0%':   { backgroundPosition: '0 -100%' },
-          '100%': { backgroundPosition: '0 200%'  },
+        scanLine: {
+          '0%':   { transform: 'translate3d(0, -120px, 0)' },
+          '100%': { transform: 'translate3d(0, 100vh, 0)' },
         },
         ticker: {
-          '0%':   { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
+          '0%':   { transform: 'translate3d(0, 0, 0)' },
+          '100%': { transform: 'translate3d(-50%, 0, 0)' },
         },
         beamSway: {
-          '0%,100%': { transform: 'rotate(0deg) scale(1)',    filter: 'blur(18px) opacity(.5)' },
-          '25%':     { transform: 'rotate(-3deg) scale(1.1)', filter: 'blur(16px) opacity(.7)' },
-          '50%':     { transform: 'rotate(3deg) scale(1.05)', filter: 'blur(20px) opacity(.4)' },
-          '75%':     { transform: 'rotate(-1deg) scale(1.1)', filter: 'blur(17px) opacity(.6)' },
+          '0%,100%': { transform: 'rotate(0deg) scale(1)',    opacity: '0.45' },
+          '25%':     { transform: 'rotate(-3deg) scale(1.1)', opacity: '0.63' },
+          '50%':     { transform: 'rotate(3deg) scale(1.05)', opacity: '0.36' },
+          '75%':     { transform: 'rotate(-1deg) scale(1.1)', opacity: '0.54' },
         },
       },
     },
