@@ -55,7 +55,12 @@ const EagleLogo = memo(function EagleLogo({ className, style }) {
     <canvas
       ref={canvasRef}
       className={className}
-      style={style}
+      style={{
+        ...style,
+        willChange: 'transform',
+        transform: 'translate3d(0,0,0)',
+        backfaceVisibility: 'hidden'
+      }}
       aria-label="SAQ Eagle"
     />
   )
