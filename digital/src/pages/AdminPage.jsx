@@ -1006,9 +1006,50 @@ export default function AdminPage() {
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-white/5">
+                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-[1px]">Список отзывов ({homeForm.testimonials.items ? homeForm.testimonials.items.length : 0}):</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newItems = [...(homeForm.testimonials.items || [])]
+                            newItems.push({ author: 'Новый автор', role: 'Должность', quote: 'Текст отзыва...' })
+                            setHomeForm({
+                              ...homeForm,
+                              testimonials: {
+                                ...homeForm.testimonials,
+                                items: newItems
+                              }
+                            })
+                          }}
+                          className="border border-gold/30 hover:border-gold text-gold px-4 py-2 text-xs uppercase tracking-[1px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Plus size={14} /> Добавить отзыв
+                        </button>
+                      </div>
+
                       {homeForm.testimonials.items && homeForm.testimonials.items.map((t, idx) => (
                         <div key={idx} className="bg-navy p-5 border border-white/5 space-y-3">
-                          <span className="text-xs text-gold font-bold">Отзыв #{idx + 1}</span>
+                          <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span className="text-xs text-gold uppercase tracking-[1px] font-bold">Отзыв #{idx + 1}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newItems = homeForm.testimonials.items.filter((_, i) => i !== idx)
+                                setHomeForm({
+                                  ...homeForm,
+                                  testimonials: {
+                                    ...homeForm.testimonials,
+                                    items: newItems
+                                  }
+                                })
+                              }}
+                              className="text-red-500/60 hover:text-red-400 text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Удалить отзыв"
+                            >
+                              <Trash2 size={12} /> Удалить
+                            </button>
+                          </div>
+                          
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                               <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Имя автора</label>
