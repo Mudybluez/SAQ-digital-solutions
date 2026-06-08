@@ -168,7 +168,7 @@ export default function AdminPage() {
         results: Array.isArray(project.results) 
           ? project.results.map(r => `${r.num} = ${r.lbl}`).join('\n')
           : '',
-        screens: Array.isArray(project.screens) ? project.screens.join('\n') : '',
+        screens: Array.isArray(project.screens) ? [...project.screens] : [],
         // Make sure stats/facts exist
         facts_type: project.facts?.['Тип'] || '',
         facts_engine: project.facts?.['AI-движок'] || project.facts?.['Движок'] || '',
@@ -179,7 +179,7 @@ export default function AdminPage() {
       setEditingProject({
         title: '', slug: '', category: 'Web App', description: '', image: '', link: '',
         overview: '', challenge: '', solution: '',
-        tags: '', solution_points: '', results: '', screens: '',
+        tags: '', solution_points: '', results: '', screens: [],
         results_title: 'Результаты',
         facts_type: '', facts_engine: '', facts_tech: '', facts_arch: ''
       })
@@ -195,7 +195,7 @@ export default function AdminPage() {
     // Prepare payload
     const tagsArr = editingProject.tags.split(',').map(t => t.trim().toUpperCase()).filter(Boolean)
     const pointsArr = editingProject.solution_points.split('\n').map(p => p.trim()).filter(Boolean)
-    const screensArr = editingProject.screens.split('\n').map(s => s.trim()).filter(Boolean)
+    const screensArr = Array.isArray(editingProject.screens) ? editingProject.screens : []
     const resultsArr = editingProject.results.split('\n').map(line => {
       const parts = line.split('=')
       if (parts.length >= 2) {
@@ -259,24 +259,44 @@ export default function AdminPage() {
     }
   }
 
-  // Image Upload helper for projects
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
+  // File Upload helper
+  const uploadFile = async (file) => {
     const formData = new FormData()
     formData.append('file', file)
+    const res = await authFetch('/api/projects/upload-image', {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || 'Ошибка при загрузке файла')
+    }
+    return data.url
+  }
 
+  // Cover image upload handler
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
     try {
-      const res = await authFetch('/api/projects/upload-image', {
-        method: 'POST',
-        body: formData
-      })
-      const data = await res.json()
-      if (data.ok) {
-        setEditingProject(p => ({ ...p, image: data.url }))
-      } else {
-        alert(data.error || 'Ошибка загрузки')
-      }
+      const url = await uploadFile(file)
+      setEditingProject(p => ({ ...p, image: url }))
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  // Screenshots upload handler (multiple files supported)
+  const handleScreenshotUpload = async (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length === 0) return
+    try {
+      const uploadPromises = files.map(file => uploadFile(file))
+      const urls = await Promise.all(uploadPromises)
+      setEditingProject(p => ({
+        ...p,
+        screens: [...(p.screens || []), ...urls]
+      }))
     } catch (err) {
       alert(err.message)
     }
@@ -539,13 +559,22 @@ export default function AdminPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ссылка на обложку *</label>
-                        <div className="flex gap-2">
-                          <input type="text" required value={editingProject.image} onChange={e => setEditingProject({...editingProject, image: e.target.value})} className="flex-1 bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold" />
-                          <label className="bg-navy border border-white/10 hover:border-gold px-4 py-2.5 text-xs text-muted hover:text-gold cursor-pointer flex items-center transition-colors">
-                            Загрузить
-                            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                          </label>
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Обложка кейса *</label>
+                        <div className="flex items-start gap-4">
+                          {editingProject.image && (
+                            <div className="w-16 h-16 bg-navy border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
+                              <img src={editingProject.image} alt="Cover Preview" className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <div className="flex-1 space-y-2">
+                            <div className="flex gap-2">
+                              <input type="text" required value={editingProject.image} onChange={e => setEditingProject({...editingProject, image: e.target.value})} className="flex-1 bg-navy border border-white/10 px-4 py-2 text-xs text-ink focus:outline-none focus:border-gold font-mono" />
+                              <label className="bg-navy border border-white/10 hover:border-gold px-4 py-2 text-xs text-muted hover:text-gold cursor-pointer flex items-center justify-center transition-colors">
+                                Загрузить
+                                <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -613,8 +642,44 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ссылки на скриншоты (по одной на строку)</label>
-                      <textarea rows={4} placeholder="https://saqdigital.kz/uploads/screenshot1.png" value={editingProject.screens} onChange={e => setEditingProject({...editingProject, screens: e.target.value})} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold font-mono" />
+                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-3">
+                        Скриншоты проекта ({editingProject.screens ? editingProject.screens.length : 0})
+                      </label>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {editingProject.screens && editingProject.screens.map((src, idx) => (
+                          <div key={idx} className="relative group aspect-video bg-navy border border-white/10 overflow-hidden flex items-center justify-center">
+                            <img src={src} alt={`Screenshot ${idx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingProject(p => ({
+                                    ...p,
+                                    screens: p.screens.filter((_, i) => i !== idx)
+                                  }))
+                                }}
+                                className="p-1.5 bg-red-950/80 border border-red-500/30 text-red-400 hover:bg-red-900 transition-colors cursor-pointer"
+                                title="Удалить скриншот"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <label className="aspect-video bg-navy border border-dashed border-white/20 hover:border-gold/50 cursor-pointer flex flex-col items-center justify-center gap-1.5 transition-all text-muted hover:text-gold">
+                          <Plus size={20} />
+                          <span className="text-[10px] uppercase font-bold tracking-[1px]">Загрузить</span>
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleScreenshotUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
 
                     <div className="flex justify-end gap-3 border-t border-white/10 pt-6">
