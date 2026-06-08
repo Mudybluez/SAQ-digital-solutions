@@ -86,7 +86,12 @@ export default function Hero() {
       <div className="absolute right-0 top-0 bottom-0 w-[55%] flex items-center justify-center z-[3] pointer-events-none overflow-hidden">
         {/* Glow halo */}
         <div className="absolute w-[520px] h-[520px] rounded-full animate-glow-pulse"
-          style={{ background: 'radial-gradient(ellipse, rgba(232,149,26,0.22) 0%, transparent 68%)' }}
+          style={{ 
+            background: 'radial-gradient(ellipse, rgba(232,149,26,0.32) 0%, transparent 68%)',
+            willChange: 'transform, opacity',
+            transform: 'translate3d(0,0,0)',
+            backfaceVisibility: 'hidden'
+          }}
         />
         {/* Scan line */}
         <div
@@ -99,6 +104,11 @@ export default function Hero() {
 
         <motion.div
           className="relative w-[min(500px,82%)] animate-float"
+          style={{
+            willChange: 'transform',
+            transform: 'translate3d(0,0,0)',
+            backfaceVisibility: 'hidden'
+          }}
           initial={{ opacity: 0, x: 60, scale: 0.9 }}
           animate={{ opacity: 1, x: 0,  scale: 1    }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -106,11 +116,10 @@ export default function Hero() {
           <EagleLogo
             className="w-full select-none"
             style={{
-              filter: [
-                'drop-shadow(0 0 28px rgba(232,149,26,0.9))',
-                'drop-shadow(0 0 65px rgba(232,149,26,0.5))',
-                'drop-shadow(0 0 130px rgba(232,149,26,0.2))',
-              ].join(' '),
+              filter: 'drop-shadow(0 0 35px rgba(232,149,26,0.85))',
+              willChange: 'transform',
+              transform: 'translate3d(0,0,0)',
+              backfaceVisibility: 'hidden'
             }}
           />
         </motion.div>
