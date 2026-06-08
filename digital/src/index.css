@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #07090F;
+    color: #F0EDE8;
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #07090F; }
+  ::-webkit-scrollbar-thumb { background: #C47A10; border-radius: 3px; }
+}
+
+/* ── Performance: GPU layer hints ── */
+.animate-ticker      { will-change: transform; }
+.animate-float       { will-change: transform; }
+.animate-glow-pulse  { will-change: transform, opacity; }
+.animate-scan        { will-change: background-position; }
+.animate-beam-sway   { will-change: transform, filter; }
+
+
+@layer utilities {
+  .text-outline-gold {
+    color: transparent;
+    -webkit-text-stroke: 1.5px #E8951A;
+  }
+  .clip-hex {
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  }
+  .clip-hex-sm {
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .gold-border {
+    border: 1px solid rgba(232,149,26,0.2);
+  }
+  .noise::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: .3;
+  }
+}

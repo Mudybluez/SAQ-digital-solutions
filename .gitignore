@@ -43,3 +43,8 @@ data/*.db
 data/*.db-shm
 data/*.db-wal
 *.log
+
+# Build outputs
+dist/
+**/dist/
+
