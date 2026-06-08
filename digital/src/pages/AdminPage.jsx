@@ -3,6 +3,81 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2, Edit2, LogOut, Check, AlertCircle, Eye, RefreshCw } from 'lucide-react'
 import { useContent } from '../context/ContentContext'
 
+const PREDEFINED_TECHS = [
+  // Frontend
+  { name: 'React', color: '#61DAFB' },
+  { name: 'Next.js', color: '#FFFFFF' },
+  { name: 'Vue.js', color: '#4FC08D' },
+  { name: 'Nuxt.js', color: '#00DC82' },
+  { name: 'Angular', color: '#DD0031' },
+  { name: 'Svelte', color: '#FF3E00' },
+  { name: 'SolidJS', color: '#446B9E' },
+  { name: 'Astro', color: '#FF5D01' },
+  { name: 'HTML5', color: '#E34F26' },
+  { name: 'CSS3', color: '#1572B6' },
+  { name: 'Tailwind CSS', color: '#38BDF8' },
+  { name: 'Sass', color: '#CC6699' },
+  { name: 'Bootstrap', color: '#7952B3' },
+  { name: 'JavaScript', color: '#F7DF1E' },
+  { name: 'TypeScript', color: '#3178C6' },
+  { name: 'Webpack', color: '#8DD6F9' },
+  { name: 'Vite', color: '#646CFF' },
+  { name: 'Redux', color: '#764ABC' },
+  { name: 'Pinia', color: '#FFE066' },
+
+  // Backend
+  { name: 'Node.js', color: '#339933' },
+  { name: 'Express', color: '#FFFFFF' },
+  { name: 'NestJS', color: '#E0234E' },
+  { name: 'Python', color: '#3776AB' },
+  { name: 'Django', color: '#092E20' },
+  { name: 'FastAPI', color: '#009688' },
+  { name: 'Flask', color: '#FFFFFF' },
+  { name: 'Ruby', color: '#CC342D' },
+  { name: 'Ruby on Rails', color: '#CC0000' },
+  { name: 'Go', color: '#00ADD8' },
+  { name: 'Rust', color: '#000000' },
+  { name: 'PHP', color: '#777BB4' },
+  { name: 'Laravel', color: '#FF2D20' },
+  { name: 'Java', color: '#007396' },
+  { name: 'Spring Boot', color: '#6DB33F' },
+  { name: 'C#', color: '#239120' },
+  { name: '.NET Core', color: '#512BD4' },
+
+  // Databases & Cache
+  { name: 'PostgreSQL', color: '#336791' },
+  { name: 'MySQL', color: '#4479A1' },
+  { name: 'MongoDB', color: '#47A248' },
+  { name: 'Redis', color: '#DC382D' },
+  { name: 'SQLite', color: '#003B57' },
+  { name: 'Firebase', color: '#FFCA28' },
+  { name: 'Supabase', color: '#3ECF8E' },
+  { name: 'Prisma', color: '#2D3748' },
+
+  // DevOps & Infrastructure
+  { name: 'Docker', color: '#2496ED' },
+  { name: 'Kubernetes', color: '#326CE5' },
+  { name: 'AWS', color: '#FF9900' },
+  { name: 'Google Cloud', color: '#4285F4' },
+  { name: 'Vercel', color: '#FFFFFF' },
+  { name: 'Netlify', color: '#00C8C8' },
+  { name: 'Heroku', color: '#430098' },
+  { name: 'Nginx', color: '#009639' },
+  { name: 'Git', color: '#F05032' },
+  { name: 'GitHub Actions', color: '#2088FF' },
+
+  // Integrations & Automation
+  { name: 'Telegram', color: '#26A5E4' },
+  { name: 'n8n', color: '#E8951A' },
+  { name: 'Make', color: '#FF6D00' },
+  { name: 'Zapier', color: '#FF4A00' },
+  { name: 'GraphQL', color: '#E10098' },
+  { name: 'WebSockets', color: '#F8B41E' },
+  { name: 'Stripe', color: '#008CDD' },
+  { name: 'Halyk Bank', color: '#00A859' },
+  { name: 'Kaspi', color: '#F14635' }
+]
+
 export default function AdminPage() {
   const navigate = useNavigate()
   const { homepageContent, privacyContent, refreshContent } = useContent()
@@ -26,6 +101,8 @@ export default function AdminPage() {
   const [homeForm, setHomeForm] = useState(null)
   const [privacyForm, setPrivacyForm] = useState(null)
   const [cmsStatus, setCmsStatus] = useState({ success: '', error: '' })
+  const [customTechName, setCustomTechName] = useState('')
+  const [customTechColor, setCustomTechColor] = useState('#C4862A')
 
   // Portfolio Form State (for Create/Edit)
   const [editingProject, setEditingProject] = useState(null) // null or project object
@@ -964,9 +1041,137 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* 6. CONTACT FORM */}
+                {/* 6. TECH STACK */}
                 <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none">
-                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">6. Форма обратной связи (Contact Form)</h3>
+                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">6. Технологии (Tech Stack)</h3>
+                  
+                  {/* Active techs container */}
+                  <div className="mb-6">
+                    <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-3">Активные технологии ({homeForm.techs ? homeForm.techs.length : 0})</label>
+                    {(!homeForm.techs || homeForm.techs.length === 0) ? (
+                      <div className="text-sm text-muted/60 bg-navy p-4 border border-white/5">Нет добавленных технологий. Выберите из списка ниже или создайте свою.</div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2 bg-navy p-4 border border-white/5">
+                        {homeForm.techs.map((t, idx) => (
+                          <div 
+                            key={t.name + '-' + idx} 
+                            className="flex items-center gap-2 bg-navy-2 border border-white/10 px-3 py-1.5 hover:border-red-500/35 transition-all group"
+                          >
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.color }} />
+                            <span className="text-[13px] font-medium text-ink">{t.name}</span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const newTechs = homeForm.techs.filter((_, i) => i !== idx)
+                                setHomeForm({ ...homeForm, techs: newTechs })
+                              }}
+                              className="text-muted hover:text-red-400 ml-1 transition-colors focus:outline-none cursor-pointer"
+                              title="Удалить"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Add technology controls */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                    {/* Predefined Add */}
+                    <div className="space-y-3">
+                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px]">Выбрать готовую технологию</label>
+                      <div className="flex gap-2">
+                        <select 
+                          onChange={(e) => {
+                            const val = e.target.value
+                            if (!val) return
+                            const selected = PREDEFINED_TECHS.find(p => p.name === val)
+                            if (selected) {
+                              // Check if already in techs list
+                              const exists = homeForm.techs && homeForm.techs.some(t => t.name.toLowerCase() === selected.name.toLowerCase())
+                              if (exists) {
+                                alert('Эта технология уже добавлена!')
+                                e.target.value = ''
+                                return
+                              }
+                              const newTechs = [...(homeForm.techs || []), selected]
+                              setHomeForm({ ...homeForm, techs: newTechs })
+                            }
+                            e.target.value = '' // reset selection
+                          }}
+                          className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold cursor-pointer"
+                        >
+                          <option value="">-- Выберите из списка --</option>
+                          {PREDEFINED_TECHS
+                            .filter(pt => !(homeForm.techs && homeForm.techs.some(t => t.name.toLowerCase() === pt.name.toLowerCase())))
+                            .map(pt => (
+                              <option key={pt.name} value={pt.name}>
+                                {pt.name}
+                              </option>
+                            ))
+                          }
+                        </select>
+                      </div>
+                      <p className="text-[11px] text-muted leading-relaxed">
+                        Выберите готовую современную технологию из нашего списка с предустановленным фирменным цветом бренда.
+                      </p>
+                    </div>
+
+                    {/* Custom Add */}
+                    <div className="space-y-3">
+                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px]">Создать свою технологию</label>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex-1">
+                          <input 
+                            type="text" 
+                            placeholder="Название (например: Bun)" 
+                            value={customTechName}
+                            onChange={(e) => setCustomTechName(e.target.value)}
+                            className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="color" 
+                            value={customTechColor}
+                            onChange={(e) => setCustomTechColor(e.target.value)}
+                            className="w-12 h-10 bg-transparent border-0 cursor-pointer p-0 block"
+                            title="Цвет индикатора"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const trimmed = customTechName.trim()
+                              if (!trimmed) {
+                                alert('Введите название технологии!')
+                                return
+                              }
+                              const exists = homeForm.techs && homeForm.techs.some(t => t.name.toLowerCase() === trimmed.toLowerCase())
+                              if (exists) {
+                                alert('Технология с таким названием уже существует!')
+                                return
+                              }
+                              const newTechs = [...(homeForm.techs || []), { name: trimmed, color: customTechColor }]
+                              setHomeForm({ ...homeForm, techs: newTechs })
+                              setCustomTechName('')
+                            }}
+                            className="bg-gold hover:bg-gold-glow text-navy px-4 py-2.5 text-xs font-head font-[800] uppercase tracking-[0.5px] transition-colors cursor-pointer shrink-0"
+                          >
+                            Добавить
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-muted leading-relaxed">
+                        Укажите любое кастомное название и выберите цвет точки-индикатора с помощью палитры.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 7. CONTACT FORM */}
+                <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none">
+                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">7. Форма обратной связи (Contact Form)</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
@@ -1016,9 +1221,9 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* 7. FOOTER */}
+                {/* 8. FOOTER */}
                 <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none">
-                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">7. Подвал (Footer)</h3>
+                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">8. Подвал (Footer)</h3>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Описание в подвале</label>

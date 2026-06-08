@@ -1,23 +1,11 @@
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-
-const techs = [
-  { name: 'React',       color: '#61DAFB' },
-  { name: 'Next.js',     color: '#FFFFFF' },
-  { name: 'Python',      color: '#3776AB' },
-  { name: 'Telegram',    color: '#26A5E4' },
-  { name: 'n8n',         color: '#E8951A' },
-  { name: 'Make',        color: '#FF6D00' },
-  { name: 'PostgreSQL',  color: '#336791' },
-  { name: 'MongoDB',     color: '#47A248' },
-  { name: 'Docker',      color: '#2496ED' },
-  { name: 'JavaScript',  color: '#F7DF1E' },
-  { name: 'TypeScript',  color: '#3178C6' },
-  { name: 'Tailwind CSS',color: '#38BDF8' },
-]
+import { useContent } from '../context/ContentContext'
 
 export default function TechStack() {
   const [ref, inView] = useInView()
+  const { homepageContent } = useContent()
+  const { techs } = homepageContent
 
   return (
     <section className="relative bg-navy-2">
@@ -34,13 +22,13 @@ export default function TechStack() {
         <motion.h2
           initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-head text-[clamp(36px,4vw,60px)] tracking-[-1px] font-[800] mb-10"
+          className="font-head text-[clamp(36px,4vw,60px)] tracking-[-1px] font-[800] mb-10 text-ink"
         >
           С чем мы работаем
         </motion.h2>
 
         <div className="flex flex-wrap gap-2">
-          {techs.map((t, i) => (
+          {techs && techs.map((t, i) => (
             <motion.div
               key={t.name}
               initial={{ opacity: 0, scale: 0.85 }}

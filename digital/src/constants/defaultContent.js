@@ -79,7 +79,21 @@ export const defaultHomepageContent = {
     tagline: "Строим точно.",
     desc: "Зарегистрированное агентство (ИП). Цифровые инструменты под конкретные бизнес-задачи.",
     copyright: "© 2026 SAQ Creative Agency. Все права защищены."
-  }
+  },
+  techs: [
+    { name: 'React',       color: '#61DAFB' },
+    { name: 'Next.js',     color: '#FFFFFF' },
+    { name: 'Python',      color: '#3776AB' },
+    { name: 'Telegram',    color: '#26A5E4' },
+    { name: 'n8n',         color: '#E8951A' },
+    { name: 'Make',        color: '#FF6D00' },
+    { name: 'PostgreSQL',  color: '#336791' },
+    { name: 'MongoDB',     color: '#47A248' },
+    { name: 'Docker',      color: '#2496ED' },
+    { name: 'JavaScript',  color: '#F7DF1E' },
+    { name: 'TypeScript',  color: '#3178C6' },
+    { name: 'Tailwind CSS',color: '#38BDF8' }
+  ]
 }
 
 export const defaultPrivacyContent = {

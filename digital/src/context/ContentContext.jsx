@@ -25,6 +25,7 @@ export function ContentProvider({ children }) {
           testimonials: { ...defaultHomepageContent.testimonials, ...homeRes.value.testimonials },
           contact: { ...defaultHomepageContent.contact, ...homeRes.value.contact },
           footer: { ...defaultHomepageContent.footer, ...homeRes.value.footer },
+          techs: homeRes.value.techs || defaultHomepageContent.techs,
         })
       }
       if (privacyRes.ok && privacyRes.value) {
