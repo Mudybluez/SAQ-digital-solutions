@@ -57,9 +57,10 @@ export function useParticles(canvasRef) {
         p.opacity += p.dir * p.dSpeed
         if (p.opacity <= 0.05 || p.opacity >= 0.75) p.dir *= -1
         if (p.y < -4) { particles[i] = make(); particles[i].y = H + 4; continue }
+        const isLight = document.documentElement.classList.contains('light')
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${p.opacity.toFixed(2)})`
+        ctx.fillStyle = `rgba(${isLight ? 138 : p.r},${isLight ? 88 : p.g},${isLight ? 16 : p.b},${p.opacity.toFixed(2)})`
         ctx.fill()
       }
       animId = requestAnimationFrame(tick)

@@ -57,7 +57,7 @@ export default function ContactForm() {
     }
   }
 
-  const inputCls = `w-full bg-[#0D1220] border border-white/8 text-ink placeholder-muted/50
+  const inputCls = `w-full bg-navy-2 border border-white/8 text-ink placeholder-muted/50
     px-4 py-3.5 text-[15px] focus:outline-none focus:border-gold/50 transition-colors duration-200 rounded-none`
 
   const labelCls = `block text-[10px] font-semibold tracking-[3px] uppercase text-muted mb-2`

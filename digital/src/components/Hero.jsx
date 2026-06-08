@@ -74,7 +74,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 z-[3] pointer-events-none"
         style={{
-          background: 'linear-gradient(90deg, rgba(7,9,15,1) 0%, rgba(7,9,15,0.88) 38%, rgba(7,9,15,0.45) 62%, rgba(7,9,15,0.05) 100%)',
+          background: 'linear-gradient(90deg, rgb(var(--navy-rgb)) 0%, rgb(var(--navy-rgb) / 0.88) 38%, rgb(var(--navy-rgb) / 0.45) 62%, rgb(var(--navy-rgb) / 0.05) 100%)',
         }}
       />
 

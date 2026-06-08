@@ -4,14 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy:    '#07090F',
-        'navy-2':'#0D1220',
-        'navy-3':'#131929',
-        gold:    '#E8951A',
-        'gold-dim':'#C47A10',
-        'gold-glow':'#F5B042',
-        'ink':   '#F0EDE8',
-        'muted': '#8A8FA8',
+        navy:    'rgb(var(--navy-rgb) / <alpha-value>)',
+        'navy-2':'rgb(var(--navy-2-rgb) / <alpha-value>)',
+        'navy-3':'rgb(var(--navy-3-rgb) / <alpha-value>)',
+        gold:    'rgb(var(--gold-rgb) / <alpha-value>)',
+        'gold-dim':'rgb(var(--gold-dim-rgb) / <alpha-value>)',
+        'gold-glow':'rgb(var(--gold-glow-rgb) / <alpha-value>)',
+        'ink':   'rgb(var(--ink-rgb) / <alpha-value>)',
+        'muted': 'rgb(var(--muted-rgb) / <alpha-value>)',
+        white:   'rgb(var(--white-rgb) / <alpha-value>)',
       },
       fontFamily: {
         head: ['"Bricolage Grotesque"', 'sans-serif'],

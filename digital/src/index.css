@@ -3,18 +3,43 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --navy-rgb: 7 9 15;
+    --navy-2-rgb: 13 18 32;
+    --navy-3-rgb: 19 25 41;
+    --gold-rgb: 232 149 26;
+    --gold-dim-rgb: 196 122 16;
+    --gold-glow-rgb: 245 176 66;
+    --ink-rgb: 240 237 232;
+    --muted-rgb: 138 143 168;
+    --white-rgb: 255 255 255;
+  }
+
+  .light {
+    --navy-rgb: 244 237 216;
+    --navy-2-rgb: 235 225 196;
+    --navy-3-rgb: 224 211 176;
+    --gold-rgb: 138 88 16;
+    --gold-dim-rgb: 138 88 16;
+    --gold-glow-rgb: 170 112 32;
+    --ink-rgb: 26 20 10;
+    --muted-rgb: 122 92 40;
+    --white-rgb: 26 20 10;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background: #07090F;
-    color: #F0EDE8;
+    background: rgb(var(--navy-rgb));
+    color: rgb(var(--ink-rgb));
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #07090F; }
-  ::-webkit-scrollbar-thumb { background: #C47A10; border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--navy-rgb)); }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--gold-dim-rgb)); border-radius: 3px; }
 }
 
 /* ── Performance: GPU layer hints ── */

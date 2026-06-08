@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Sun, Moon } from 'lucide-react'
+import { useContent } from '../context/ContentContext'
 
 const links = [
   { label: 'Услуги',    href: '#services' },
@@ -12,6 +13,7 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open,     setOpen]     = useState(false)
+  const { theme, toggleTheme } = useContent()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -53,6 +55,15 @@ export default function Navbar() {
             </li>
           ))}
           <li>
+            <button
+              onClick={toggleTheme}
+              className="text-muted hover:text-gold transition-colors p-1.5 focus:outline-none flex items-center justify-center cursor-pointer"
+              title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          </li>
+          <li>
             <a
               href="#contact"
               className="clip-hex bg-gold text-navy text-xs font-bold tracking-[1.5px] uppercase px-6 py-3 hover:bg-gold-glow transition-colors duration-200"
@@ -62,14 +73,24 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Mobile burger */}
-        <button
-          className="md:hidden text-gold p-1"
-          onClick={() => setOpen(v => !v)}
-          aria-label="Меню"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile controls */}
+        <div className="flex items-center gap-4 md:hidden">
+          <button
+            onClick={toggleTheme}
+            className="text-gold p-1 focus:outline-none flex items-center justify-center cursor-pointer"
+            title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+          >
+            {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
+          </button>
+          
+          <button
+            className="text-gold p-1"
+            onClick={() => setOpen(v => !v)}
+            aria-label="Меню"
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </motion.nav>
 
       {/* Mobile drawer */}

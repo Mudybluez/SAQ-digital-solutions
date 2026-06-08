@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { Send, Mail } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
+import { useContent } from '../context/ContentContext'
 
 export default function CTA() {
   const [ref, inView] = useInView()
+  const { theme } = useContent()
 
   return (
     <section id="contact" className="relative bg-navy-2 overflow-hidden">
@@ -11,7 +13,7 @@ export default function CTA() {
 
       {/* Background logo watermark */}
       <div className="absolute right-[-5%] top-1/2 -translate-y-1/2 w-[55%] pointer-events-none opacity-[0.03] select-none">
-        <img src="/logo.png" alt="" className="w-full" style={{ mixBlendMode: 'screen' }} />
+        <img src="/logo.png" alt="" className="w-full" style={{ mixBlendMode: theme === 'light' ? 'multiply' : 'screen' }} />
       </div>
 
       {/* Gold radial glow */}

@@ -7,6 +7,20 @@ export function ContentProvider({ children }) {
   const [homepageContent, setHomepageContent] = useState(defaultHomepageContent)
   const [privacyContent, setPrivacyContent] = useState(defaultPrivacyContent)
   const [loading, setLoading] = useState(true)
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light')
+    } else {
+      document.documentElement.classList.remove('light')
+    }
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }
 
   const fetchContent = async () => {
     try {
@@ -46,7 +60,7 @@ export function ContentProvider({ children }) {
   }, [])
 
   return (
-    <ContentContext.Provider value={{ homepageContent, privacyContent, refreshContent: fetchContent, loading }}>
+    <ContentContext.Provider value={{ homepageContent, privacyContent, refreshContent: fetchContent, loading, theme, toggleTheme }}>
       {children}
     </ContentContext.Provider>
   )
