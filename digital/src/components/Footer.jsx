@@ -37,7 +37,8 @@ export default function Footer() {
           <div>
             <p className="text-[11px] font-bold tracking-[3px] uppercase text-gold mb-4">Контакты</p>
             <ul className="space-y-3">
-              <li><a href="https://t.me/saqdev" className="text-[14px] text-muted hover:text-gold transition-colors">Telegram</a></li>
+              <li><a href="https://t.me/saqdigitalsystems" target="_blank" rel="noopener" className="text-[14px] text-muted hover:text-gold transition-colors">Telegram</a></li>
+              <li><a href="https://www.instagram.com/saq_digital_systems?igsh=MXZybW9oeTByZGI1Ng%3D%3D&utm_source=qr" target="_blank" rel="noopener" className="text-[14px] text-muted hover:text-gold transition-colors">Instagram</a></li>
               <li><a href="mailto:hello@saq.digital" className="text-[14px] text-muted hover:text-gold transition-colors">hello@saq.digital</a></li>
             </ul>
           </div>
@@ -51,7 +52,7 @@ export default function Footer() {
           </Link>
           <div className="flex gap-3">
             {/* Telegram */}
-            <a href="https://t.me/saqdev" target="_blank" rel="noopener"
+            <a href="https://t.me/saqdigitalsystems" target="_blank" rel="noopener"
                className="w-9 h-9 border border-gold/15 flex items-center justify-center text-muted hover:border-gold hover:text-gold transition-all duration-200"
                aria-label="Telegram"
             >
@@ -60,7 +61,10 @@ export default function Footer() {
               </svg>
             </a>
             {/* Instagram */}
-            <a href="#" className="w-9 h-9 border border-gold/15 flex items-center justify-center text-muted hover:border-gold hover:text-gold transition-all duration-200" aria-label="Instagram">
+            <a href="https://www.instagram.com/saq_digital_systems?igsh=MXZybW9oeTByZGI1Ng%3D%3D&utm_source=qr" target="_blank" rel="noopener"
+               className="w-9 h-9 border border-gold/15 flex items-center justify-center text-muted hover:border-gold hover:text-gold transition-all duration-200"
+               aria-label="Instagram"
+            >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <rect x="2" y="2" width="20" height="20" rx="5"/>
                 <circle cx="12" cy="12" r="4"/>
