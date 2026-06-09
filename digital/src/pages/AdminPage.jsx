@@ -118,6 +118,7 @@ export default function AdminPage() {
   const [projectFormError, setProjectFormError] = useState('')
   const [projectFormSuccess, setProjectFormSuccess] = useState('')
   const [showTranslateConfirm, setShowTranslateConfirm] = useState(false)
+  const [testimonialsForm, setTestimonialsForm] = useState(null)
 
   // Check login on load
   useEffect(() => {
@@ -169,6 +170,27 @@ export default function AdminPage() {
     }
   }
 
+  const loadTestimonialsSettings = async () => {
+    try {
+      const res = await authFetch('/api/projects/settings/testimonials')
+      const data = await res.json()
+      const defaultVal = defaultHomepageContentRU.testimonials
+      if (data.ok && data.value) {
+        setTestimonialsForm({
+          tag: data.value.tag || defaultVal.tag,
+          title: data.value.title || defaultVal.title,
+          items: Array.isArray(data.value.items) 
+            ? data.value.items 
+            : (Array.isArray(data.value) ? data.value : defaultVal.items)
+        })
+      } else {
+        setTestimonialsForm(defaultVal)
+      }
+    } catch (err) {
+      console.error('Failed to load testimonials in CMS:', err)
+    }
+  }
+
   // Load active tab data
   useEffect(() => {
     if (!isAuthenticated) return
@@ -177,6 +199,8 @@ export default function AdminPage() {
       loadLeads()
     } else if (activeTab === 'portfolio') {
       loadProjects()
+    } else if (activeTab === 'testimonials') {
+      loadTestimonialsSettings()
     } else if (activeTab === 'home_cms') {
       loadCmsSettings('home_cms', cmsLang)
     } else if (activeTab === 'privacy_cms') {
@@ -714,6 +738,14 @@ export default function AdminPage() {
               ${activeTab === 'portfolio' ? 'bg-gold/5 text-gold border-gold' : 'border-transparent text-muted hover:text-ink hover:bg-white/3'}`}
           >
             Кейсы Портфолио
+          </button>
+
+          <button
+            onClick={() => setActiveTab('testimonials')}
+            className={`w-full text-left px-4 py-3 transition-all duration-200 border-l-2 uppercase tracking-[1.5px] text-xs font-semibold
+              ${activeTab === 'testimonials' ? 'bg-gold/5 text-gold border-gold' : 'border-transparent text-muted hover:text-ink hover:bg-white/3'}`}
+          >
+            Отзывы
           </button>
 
           <p className="text-[9px] font-bold text-muted/50 tracking-[3px] uppercase mt-6 mb-2">Конструктор страниц</p>
@@ -1313,98 +1345,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* 5. TESTIMONIALS */}
-                <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none">
-                  <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">5. Отзывы (Testimonials)</h3>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Тег секции</label>
-                        <input type="text" value={homeForm.testimonials.tag} onChange={e => setHomeForm({ ...homeForm, testimonials: { ...homeForm.testimonials, tag: e.target.value } })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Заголовок секции</label>
-                        <input type="text" value={homeForm.testimonials.title} onChange={e => setHomeForm({ ...homeForm, testimonials: { ...homeForm.testimonials, title: e.target.value } })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t border-white/5">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-[1px]">Список отзывов ({homeForm.testimonials.items ? homeForm.testimonials.items.length : 0}):</p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newItems = [...(homeForm.testimonials.items || [])]
-                            newItems.push({ author: 'Новый автор', role: 'Должность', quote: 'Текст отзыва...' })
-                            setHomeForm({
-                              ...homeForm,
-                              testimonials: {
-                                ...homeForm.testimonials,
-                                items: newItems
-                              }
-                            })
-                          }}
-                          className="border border-gold/30 hover:border-gold text-gold px-4 py-2 text-xs uppercase tracking-[1px] flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                          <Plus size={14} /> Добавить отзыв
-                        </button>
-                      </div>
-
-                      {homeForm.testimonials.items && homeForm.testimonials.items.map((t, idx) => (
-                        <div key={idx} className="bg-navy p-5 border border-white/5 space-y-3">
-                          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span className="text-xs text-gold uppercase tracking-[1px] font-bold">Отзыв #{idx + 1}</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newItems = homeForm.testimonials.items.filter((_, i) => i !== idx)
-                                setHomeForm({
-                                  ...homeForm,
-                                  testimonials: {
-                                    ...homeForm.testimonials,
-                                    items: newItems
-                                  }
-                                })
-                              }}
-                              className="text-red-500/60 hover:text-red-400 text-xs flex items-center gap-1 transition-colors cursor-pointer"
-                              title="Удалить отзыв"
-                            >
-                              <Trash2 size={12} /> Удалить
-                            </button>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Имя автора</label>
-                              <input type="text" value={t.author} onChange={e => {
-                                const newTest = [...homeForm.testimonials.items]
-                                newTest[idx].author = e.target.value
-                                setHomeForm({ ...homeForm, testimonials: { ...homeForm.testimonials, items: newTest } })
-                              }} className="w-full bg-navy-2 border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold font-semibold" />
-                            </div>
-                            <div>
-                              <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Должность / Компания</label>
-                              <input type="text" value={t.role} onChange={e => {
-                                const newTest = [...homeForm.testimonials.items]
-                                newTest[idx].role = e.target.value
-                                setHomeForm({ ...homeForm, testimonials: { ...homeForm.testimonials, items: newTest } })
-                              }} className="w-full bg-navy-2 border border-white/10 px-3 py-2 text-muted text-sm focus:outline-none focus:border-gold" />
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Текст отзыва</label>
-                            <textarea value={t.quote} onChange={e => {
-                              const newTest = [...homeForm.testimonials.items]
-                              newTest[idx].quote = e.target.value
-                              setHomeForm({ ...homeForm, testimonials: { ...homeForm.testimonials, items: newTest } })
-                            }} rows={3} className="w-full bg-navy-2 border border-white/10 p-3 text-ink text-xs focus:outline-none focus:border-gold" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
                 {/* 6. TECH STACK */}
                 <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none">
                   <h3 className="text-gold font-head font-[700] text-lg uppercase tracking-[1.5px] mb-6 border-b border-white/5 pb-3">6. Технологии (Tech Stack)</h3>
@@ -1724,6 +1664,132 @@ export default function AdminPage() {
                     className="bg-gold hover:bg-gold-glow text-navy px-8 py-4 font-head font-[800] tracking-[1px] uppercase text-sm transition-colors cursor-pointer"
                   >
                     Сохранить все изменения Политики
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5. TESTIMONIALS CMS TAB */}
+          {activeTab === 'testimonials' && testimonialsForm && (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="font-head font-[800] text-3xl text-ink">Отзывы клиентов</h2>
+                  <p className="text-xs text-muted font-mono tracking-[1px] mt-1">Редактирование глобальных отзывов клиентов и их оценок</p>
+                </div>
+                <button
+                  onClick={() => handleSaveCMS('testimonials', testimonialsForm)}
+                  className="bg-gold hover:bg-gold-glow text-navy px-6 py-3 font-head font-[800] text-xs uppercase tracking-[1px] transition-colors cursor-pointer"
+                >
+                  Сохранить изменения
+                </button>
+              </div>
+
+              <div className="space-y-8">
+                {/* HEAD DETAILS */}
+                <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Тег секции</label>
+                      <input type="text" value={testimonialsForm.tag || ''} onChange={e => setTestimonialsForm({ ...testimonialsForm, tag: e.target.value })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Заголовок секции</label>
+                      <input type="text" value={testimonialsForm.title || ''} onChange={e => setTestimonialsForm({ ...testimonialsForm, title: e.target.value })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* TESTIMONIALS LIST EDITOR */}
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-bold text-muted uppercase tracking-[1px]">Список отзывов ({testimonialsForm.items ? testimonialsForm.items.length : 0})</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newItems = [...(testimonialsForm.items || [])]
+                        newItems.push({ author: 'Новый автор', role: 'Должность / Компания', quote: 'Текст отзыва...', rating: 5 })
+                        setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                      }}
+                      className="border border-gold/30 hover:border-gold text-gold px-4 py-2 text-xs uppercase tracking-[1px] flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Plus size={14} /> Добавить отзыв
+                    </button>
+                  </div>
+
+                  {testimonialsForm.items && testimonialsForm.items.map((t, idx) => (
+                    <div key={idx} className="bg-navy-2 border border-white/10 p-6 space-y-4 relative group">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = testimonialsForm.items.filter((_, i) => i !== idx)
+                          setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                        }}
+                        className="absolute top-6 right-6 text-red-500/50 hover:text-red-400 p-1 bg-red-950/20 border border-red-500/10 hover:border-red-500/30 transition-all cursor-pointer"
+                        title="Удалить отзыв"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-1">
+                          <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Имя автора</label>
+                          <input type="text" value={t.author || ''} onChange={e => {
+                            const newItems = [...testimonialsForm.items]
+                            newItems[idx].author = e.target.value
+                            setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                          }} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm font-semibold focus:outline-none focus:border-gold" />
+                        </div>
+
+                        <div className="md:col-span-1">
+                          <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Должность / Компания</label>
+                          <input type="text" value={t.role || ''} onChange={e => {
+                            const newItems = [...testimonialsForm.items]
+                            newItems[idx].role = e.target.value
+                            setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                          }} className="w-full bg-navy border border-white/10 px-3 py-2 text-muted text-sm focus:outline-none focus:border-gold" />
+                        </div>
+
+                        <div className="md:col-span-1">
+                          <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Оценка (Звезды)</label>
+                          <select 
+                            value={t.rating || 5} 
+                            onChange={e => {
+                              const newItems = [...testimonialsForm.items]
+                              newItems[idx].rating = Number(e.target.value)
+                              setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                            }} 
+                            className="w-full bg-navy border border-white/10 px-3 py-2 text-gold text-sm font-semibold focus:outline-none focus:border-gold font-mono"
+                          >
+                            <option value="5">★★★★★ (5 звезд)</option>
+                            <option value="4">★★★★☆ (4 звезды)</option>
+                            <option value="3">★★★☆☆ (3 звезды)</option>
+                            <option value="2">★★☆☆☆ (2 звезды)</option>
+                            <option value="1">★☆☆☆☆ (1 звезда)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-1">Текст отзыва</label>
+                        <textarea value={t.quote || ''} onChange={e => {
+                          const newItems = [...testimonialsForm.items]
+                          newItems[idx].quote = e.target.value
+                          setTestimonialsForm({ ...testimonialsForm, items: newItems })
+                        }} rows={3} className="w-full bg-navy border border-white/10 p-3 text-ink text-sm focus:outline-none focus:border-gold" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* SAVE BUTTON */}
+                <div className="flex justify-end pt-4">
+                  <button
+                    onClick={() => handleSaveCMS('testimonials', testimonialsForm)}
+                    className="bg-gold hover:bg-gold-glow text-navy px-8 py-4 font-head font-[800] tracking-[1px] uppercase text-sm transition-colors cursor-pointer"
+                  >
+                    Сохранить все отзывы
                   </button>
                 </div>
               </div>

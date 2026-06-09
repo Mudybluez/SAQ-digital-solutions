@@ -35,13 +35,24 @@ export function ContentProvider({ children }) {
       const homeKey = `homepage_${lang}`
       const privacyKey = `privacy_${lang}`
 
-      const [homeRes, privacyRes] = await Promise.all([
+      const [homeRes, privacyRes, testimonialsRes] = await Promise.all([
         fetch(`/api/projects/settings/${homeKey}`).then(r => r.json()).catch(() => ({})),
-        fetch(`/api/projects/settings/${privacyKey}`).then(r => r.json()).catch(() => ({}))
+        fetch(`/api/projects/settings/${privacyKey}`).then(r => r.json()).catch(() => ({})),
+        fetch('/api/projects/settings/testimonials').then(r => r.json()).catch(() => ({}))
       ])
 
       const defaultHome = defaultHomepageContentMap[lang] || defaultHomepageContentRU
       const defaultPriv = defaultPrivacyContentMap[lang] || defaultPrivacyContentRU
+
+      const testimonialsData = (testimonialsRes.ok && testimonialsRes.value)
+        ? {
+            tag: testimonialsRes.value.tag || defaultHome.testimonials.tag,
+            title: testimonialsRes.value.title || defaultHome.testimonials.title,
+            items: Array.isArray(testimonialsRes.value.items) 
+              ? testimonialsRes.value.items 
+              : (Array.isArray(testimonialsRes.value) ? testimonialsRes.value : defaultHome.testimonials.items)
+          }
+        : defaultHome.testimonials
 
       if (homeRes.ok && homeRes.value) {
         setHomepageContent({
@@ -50,13 +61,16 @@ export function ContentProvider({ children }) {
           hero: { ...defaultHome.hero, ...homeRes.value.hero },
           services: { ...defaultHome.services, ...homeRes.value.services },
           process: { ...defaultHome.process, ...homeRes.value.process },
-          testimonials: { ...defaultHome.testimonials, ...homeRes.value.testimonials },
+          testimonials: testimonialsData,
           contact: { ...defaultHome.contact, ...homeRes.value.contact },
           footer: { ...defaultHome.footer, ...homeRes.value.footer },
           techs: homeRes.value.techs || defaultHome.techs,
         })
       } else {
-        setHomepageContent(defaultHome)
+        setHomepageContent({
+          ...defaultHome,
+          testimonials: testimonialsData
+        })
       }
 
       if (privacyRes.ok && privacyRes.value) {

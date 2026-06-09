@@ -97,9 +97,12 @@ export default function Testimonials() {
               >
                 {/* Stars */}
                 <div className="flex gap-1 mb-5">
-                  {Array(5).fill(0).map((_, j) => (
-                    <Star key={j} size={14} className="fill-gold text-gold" />
-                  ))}
+                  {Array(5).fill(0).map((_, j) => {
+                    const isFilled = j < (r.rating || 5);
+                    return (
+                      <Star key={j} size={14} className={isFilled ? 'fill-gold text-gold' : 'text-gold/20'} />
+                    )
+                  })}
                 </div>
                 <p className="text-[15px] text-ink/90 leading-[1.75] italic mb-8">"{r.quote}"</p>
                 <div className="flex items-center gap-3">
