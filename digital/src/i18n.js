@@ -67,7 +67,10 @@ const resources = {
       // CMS strings
       cms_lang_label: 'Язык редактирования',
       cms_auto_translate: 'Перевести на все языки',
-      cms_auto_translate_loading: 'Переводим...'
+      cms_auto_translate_loading: 'Переводим...',
+      // Testimonials
+      testimonials_tag: 'Отзывы',
+      testimonials_title: 'Что говорят клиенты'
     }
   },
   en: {
@@ -135,7 +138,10 @@ const resources = {
       // CMS strings
       cms_lang_label: 'Editing Language',
       cms_auto_translate: 'Translate to all languages',
-      cms_auto_translate_loading: 'Translating...'
+      cms_auto_translate_loading: 'Translating...',
+      // Testimonials
+      testimonials_tag: 'Testimonials',
+      testimonials_title: 'What Clients Say'
     }
   },
   kk: {
@@ -203,7 +209,10 @@ const resources = {
       // CMS strings
       cms_lang_label: 'Өңдеу тілі',
       cms_auto_translate: 'Барлық тілдерге аудару',
-      cms_auto_translate_loading: 'Аударылуда...'
+      cms_auto_translate_loading: 'Аударылуда...',
+      // Testimonials
+      testimonials_tag: 'Пікірлер',
+      testimonials_title: 'Клиенттер не дейді'
     }
   }
 }

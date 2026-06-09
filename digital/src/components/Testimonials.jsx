@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useInView } from '../hooks/useInView'
 import { useContent } from '../context/ContentContext'
 
 export default function Testimonials() {
+  const { t } = useTranslation()
   const [ref, inView] = useInView()
   const { homepageContent } = useContent()
   const { testimonials } = homepageContent
@@ -38,14 +40,14 @@ export default function Testimonials() {
           transition={{ duration: 0.6 }}
           className="flex items-center justify-center gap-3 text-xs font-bold tracking-[4px] uppercase text-gold mb-4"
         >
-          <span className="w-8 h-px bg-gold" />{testimonials.tag}<span className="w-8 h-px bg-gold" />
+          <span className="w-8 h-px bg-gold" />{t('testimonials_tag')}<span className="w-8 h-px bg-gold" />
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1 }}
           className="font-head text-[clamp(40px,5vw,80px)] leading-[0.95] tracking-[-1px] font-[800] mb-12 text-ink"
         >
-          {testimonials.title}
+          {t('testimonials_title')}
         </motion.h2>
 
         {/* Carousel Navigation (Visible only if > 3 testimonials) */}

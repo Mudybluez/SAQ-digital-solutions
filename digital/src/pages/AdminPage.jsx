@@ -177,14 +177,14 @@ export default function AdminPage() {
       const defaultVal = defaultHomepageContentRU.testimonials
       if (data.ok && data.value) {
         setTestimonialsForm({
-          tag: data.value.tag || defaultVal.tag,
-          title: data.value.title || defaultVal.title,
           items: Array.isArray(data.value.items) 
             ? data.value.items 
             : (Array.isArray(data.value) ? data.value : defaultVal.items)
         })
       } else {
-        setTestimonialsForm(defaultVal)
+        setTestimonialsForm({
+          items: defaultVal.items
+        })
       }
     } catch (err) {
       console.error('Failed to load testimonials in CMS:', err)
@@ -1687,20 +1687,6 @@ export default function AdminPage() {
               </div>
 
               <div className="space-y-8">
-                {/* HEAD DETAILS */}
-                <div className="bg-navy-2 border border-white/10 p-6 md:p-8 rounded-none space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Тег секции</label>
-                      <input type="text" value={testimonialsForm.tag || ''} onChange={e => setTestimonialsForm({ ...testimonialsForm, tag: e.target.value })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Заголовок секции</label>
-                      <input type="text" value={testimonialsForm.title || ''} onChange={e => setTestimonialsForm({ ...testimonialsForm, title: e.target.value })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
-                    </div>
-                  </div>
-                </div>
-
                 {/* TESTIMONIALS LIST EDITOR */}
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
