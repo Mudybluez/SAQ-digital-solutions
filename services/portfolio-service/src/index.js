@@ -33,7 +33,6 @@ function auth(req, res, next) {
     const [, given] = Buffer.from(encoded, "base64").toString().split(":");
     if (given === pass) return next();
   }
-  // res.set("WWW-Authenticate", 'Basic realm="SAQ Admin"');
   return res.status(401).send("Требуется авторизация.");
 }
 
@@ -71,6 +70,59 @@ const ensureParsed = (val, fallback) => {
   return val ?? fallback;
 };
 
+// Google Translate API Integration
+async function translateText(text, from, to) {
+  if (!text || !text.trim()) return "";
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Google Translate returned HTTP ${res.status}`);
+    }
+    const json = await res.json();
+    if (Array.isArray(json) && Array.isArray(json[0])) {
+      return json[0].map(item => item[0]).join("");
+    }
+    return text;
+  } catch (err) {
+    console.error(`[translation-error] from ${from} to ${to}:`, err);
+    return text; // Fallback
+  }
+}
+
+async function translateProjectFields(fields, from, to) {
+  const result = {};
+  for (const [key, val] of Object.entries(fields)) {
+    if (key === 'facts' && val && typeof val === 'object') {
+      const translatedFacts = {};
+      for (const [factKey, factVal] of Object.entries(val)) {
+        const k = await translateText(factKey, from, to);
+        const v = await translateText(factVal, from, to);
+        translatedFacts[k] = v;
+      }
+      result.facts = translatedFacts;
+    } else if (key === 'solution_points' && Array.isArray(val)) {
+      result.solution_points = [];
+      for (const pt of val) {
+        result.solution_points.push(await translateText(pt, from, to));
+      }
+    } else if (key === 'results' && Array.isArray(val)) {
+      result.results = [];
+      for (const r of val) {
+        result.results.push({
+          num: r.num,
+          lbl: await translateText(r.lbl, from, to)
+        });
+      }
+    } else if (['title', 'description', 'category', 'overview', 'challenge', 'solution', 'results_title'].includes(key) && typeof val === 'string') {
+      result[key] = await translateText(val, from, to);
+    } else {
+      result[key] = val;
+    }
+  }
+  return result;
+}
+
 // Health Check
 app.get("/api/projects/health", (req, res) => res.json({ ok: true, service: "portfolio" }));
 
@@ -84,7 +136,8 @@ app.get("/api/projects", async (req, res) => {
       facts: ensureParsed(p.facts, {}),
       solution_points: ensureParsed(p.solution_points, []),
       results: ensureParsed(p.results, []),
-      screens: ensureParsed(p.screens, [])
+      screens: ensureParsed(p.screens, []),
+      translations: ensureParsed(p.translations, {})
     }));
     return res.json({ ok: true, projects });
   } catch (err) {
@@ -103,7 +156,8 @@ app.get("/api/projects/:slug", async (req, res) => {
       facts: ensureParsed(p.facts, {}),
       solution_points: ensureParsed(p.solution_points, []),
       results: ensureParsed(p.results, []),
-      screens: ensureParsed(p.screens, [])
+      screens: ensureParsed(p.screens, []),
+      translations: ensureParsed(p.translations, {})
     };
     return res.json({ ok: true, project });
   } catch (err) {
@@ -117,6 +171,21 @@ app.post("/api/projects/upload-image", auth, upload.single("file"), (req, res) =
     return res.status(400).json({ ok: false, error: "Файл не загружен." });
   }
   return res.json({ ok: true, url: `/uploads/${req.file.filename}` });
+});
+
+// Batch Translate Endpoint
+app.post("/api/projects/translate", auth, async (req, res) => {
+  const { fields, from, to } = req.body || {};
+  if (!fields || !from || !to) {
+    return res.status(400).json({ ok: false, error: "Не переданы поля или языки перевода." });
+  }
+  try {
+    const translated = await translateProjectFields(fields, from, to);
+    return res.json({ ok: true, translated });
+  } catch (err) {
+    console.error("[translate-error]:", err);
+    return res.status(500).json({ ok: false, error: "Не удалось перевести текст." });
+  }
 });
 
 // Create
@@ -142,7 +211,8 @@ app.post("/api/projects", auth, async (req, res) => {
     solution_points: Array.isArray(body.solution_points) ? body.solution_points : [],
     results_title: body.results_title ? body.results_title.trim() : "Результаты",
     results: Array.isArray(body.results) ? body.results : [],
-    screens: Array.isArray(body.screens) ? body.screens : []
+    screens: Array.isArray(body.screens) ? body.screens : [],
+    translations: body.translations && typeof body.translations === "object" ? body.translations : {}
   };
 
   try {
@@ -181,7 +251,8 @@ app.put("/api/projects/:id", auth, async (req, res) => {
     solution_points: Array.isArray(body.solution_points) ? body.solution_points : [],
     results_title: body.results_title ? body.results_title.trim() : "Результаты",
     results: Array.isArray(body.results) ? body.results : [],
-    screens: Array.isArray(body.screens) ? body.screens : []
+    screens: Array.isArray(body.screens) ? body.screens : [],
+    translations: body.translations && typeof body.translations === "object" ? body.translations : {}
   };
 
   try {

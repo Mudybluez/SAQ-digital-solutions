@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 import { getProject, projects } from '../data/projects'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 const fadeUp = (delay = 0) => ({
   initial:   { opacity: 0, y: 32 },
@@ -11,13 +12,36 @@ const fadeUp = (delay = 0) => ({
   transition:{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
 })
 
+const translateProject = (p, lang) => {
+  if (lang === 'ru' || !p.translations || !p.translations[lang]) {
+    return p
+  }
+  const t = p.translations[lang]
+  return {
+    ...p,
+    title: t.title || p.title,
+    subtitle: t.subtitle || t.description || p.subtitle,
+    desc: t.desc || t.description || p.desc,
+    description: t.description || p.description,
+    category: t.category || p.category,
+    overview: t.overview || p.overview,
+    challenge: t.challenge || p.challenge,
+    solution: t.solution || p.solution,
+    solution_points: t.solution_points || p.solution_points,
+    results_title: t.results_title || p.results_title,
+    results: t.results || p.results,
+    facts: t.facts || p.facts
+  }
+}
+
 export default function WorkPage() {
+  const { t } = useTranslation()
   const { slug }    = useParams()
   const navigate    = useNavigate()
-  const [p, setP]   = useState(null)
+  const [rawP, setRawP]   = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightbox, setLightbox] = useState(null)
-  const { theme } = useContent()
+  const { theme, language } = useContent()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -29,7 +53,7 @@ export default function WorkPage() {
       .then(data => {
         if (data.ok && data.project) {
           const project = data.project;
-          setP({
+          setRawP({
             ...project,
             desc: project.desc || project.description || '',
             subtitle: project.subtitle || project.description || '',
@@ -41,18 +65,21 @@ export default function WorkPage() {
         } else {
           // Fall back to static project data
           const staticP = getProject(slug)
-          setP(staticP);
+          setRawP(staticP);
         }
       })
       .catch(err => {
         console.error('Error fetching project from API, using static fallback:', err);
         const staticP = getProject(slug)
-        setP(staticP);
+        setRawP(staticP);
       })
       .finally(() => {
         setLoading(false);
       });
   }, [slug])
+
+  // Translate project on active language change
+  const p = rawP ? translateProject(rawP, language) : null
 
   useEffect(() => {
     if (p) {
@@ -70,20 +97,22 @@ export default function WorkPage() {
   if (loading) return (
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center gap-4">
       <div className="w-10 h-10 rounded-full border-2 border-gold border-t-transparent animate-spin" />
-      <p className="text-muted text-xs tracking-[2px] uppercase">Загрузка кейса...</p>
+      <p className="text-muted text-xs tracking-[2px] uppercase">{t('loading_case')}</p>
     </div>
   )
 
   if (!p) return (
     <div className="min-h-screen bg-navy flex flex-col items-center justify-center gap-6">
-      <p className="text-muted text-xl">Проект не найден</p>
+      <p className="text-muted text-xl">{t('project_not_found')}</p>
       <Link to="/" className="text-gold hover:text-gold-glow transition-colors flex items-center gap-2">
-        <ArrowLeft size={16} /> На главную
+        <ArrowLeft size={16} /> {t('go_home')}
       </Link>
     </div>
   )
 
-  const nextProject = projects[(projects.findIndex(x => x.slug === slug) + 1) % projects.length]
+  const nextProjectIndex = projects.findIndex(x => x.slug === slug)
+  const nextProjectRaw = projects[(nextProjectIndex !== -1 ? nextProjectIndex + 1 : 0) % projects.length]
+  const nextProject = translateProject(nextProjectRaw, language)
 
   return (
     <div className="min-h-screen bg-navy font-body">
@@ -102,7 +131,7 @@ export default function WorkPage() {
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-muted hover:text-gold transition-colors text-sm"
           >
-            <ArrowLeft size={15} /> Назад
+            <ArrowLeft size={15} /> {t('back')}
           </button>
         </div>
       </header>
@@ -151,13 +180,13 @@ export default function WorkPage() {
               <a href={p.link} target="_blank" rel="noopener"
                  className="inline-flex items-center gap-2 bg-gold text-navy font-head font-[800]
                             text-sm tracking-[-0.3px] px-8 py-3.5 hover:bg-gold-glow transition-colors">
-                Открыть проект <ArrowUpRight size={15} />
+                {t('open_project')} <ArrowUpRight size={15} />
               </a>
             )}
             <Link to="/#portfolio"
               className="inline-flex items-center gap-2 border border-gold/25 text-ink
                          text-sm font-medium px-7 py-3.5 hover:border-gold hover:text-gold transition-all">
-              Все работы
+              {t('all_works')}
             </Link>
           </motion.div>
         </div>
@@ -181,9 +210,9 @@ export default function WorkPage() {
       <section className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <motion.div {...fadeUp(0)} className="lg:sticky lg:top-24">
-            <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">О проекте</p>
+            <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">{t('about_project')}</p>
             <h2 className="font-head font-[800] text-[clamp(36px,4vw,58px)] leading-[0.95] tracking-[-1px] text-ink mb-6">
-              Обзор
+              {t('overview')}
             </h2>
             <p className="text-[16px] text-muted leading-[1.8]">{p.overview}</p>
           </motion.div>
@@ -207,18 +236,18 @@ export default function WorkPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Challenge */}
             <div>
-              <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold/60 mb-4">Задача</p>
+              <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold/60 mb-4">{t('challenge_tag')}</p>
               <h3 className="font-head font-[800] text-[clamp(28px,3vw,44px)] leading-[0.95] tracking-[-1px] text-ink mb-6">
-                С чем пришёл клиент
+                {t('challenge_title')}
               </h3>
               <p className="text-[16px] text-muted leading-[1.8]">{p.challenge}</p>
             </div>
 
             {/* Solution */}
             <div>
-              <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">Решение</p>
+              <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">{t('solution_tag')}</p>
               <h3 className="font-head font-[800] text-[clamp(28px,3vw,44px)] leading-[0.95] tracking-[-1px] text-ink mb-6">
-                Что мы сделали
+                {t('solution_title')}
               </h3>
               <p className="text-[16px] text-muted leading-[1.8] mb-8">{p.solution}</p>
 
@@ -238,7 +267,7 @@ export default function WorkPage() {
       {/* ── RESULTS ── */}
       {p.results.length > 0 && (
         <section className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
-          <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">Результат</p>
+          <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">{t('results_tag')}</p>
           <h2 className="font-head font-[800] text-[clamp(36px,4vw,58px)] leading-[0.95] tracking-[-1px] text-ink mb-14">
             {p.results_title}
           </h2>
@@ -260,9 +289,9 @@ export default function WorkPage() {
       {p.screens.length > 1 && (
         <section className="bg-navy-2">
           <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
-            <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">Экраны</p>
+            <p className="text-[11px] font-bold tracking-[4px] uppercase text-gold mb-4">{t('screens_tag')}</p>
             <h2 className="font-head font-[800] text-[clamp(36px,4vw,58px)] leading-[0.95] tracking-[-1px] text-ink mb-12">
-              Интерфейс
+              {t('screens_title')}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
@@ -275,7 +304,7 @@ export default function WorkPage() {
                   <div className="absolute inset-0 bg-navy/40 opacity-0 group-hover:opacity-100 transition-opacity
                                   flex items-center justify-center">
                     <span className="text-[11px] font-bold tracking-[2px] uppercase text-ink">
-                      Открыть
+                      {t('open_btn')}
                     </span>
                   </div>
                   <div className="absolute inset-0 border border-gold/10 pointer-events-none" />
@@ -291,7 +320,7 @@ export default function WorkPage() {
         <Link to={`/work/${nextProject.slug}`}
           className="group block max-w-[1400px] mx-auto px-6 md:px-12 py-16 flex items-center justify-between hover:bg-gold/[0.02] transition-colors">
           <div>
-            <p className="text-[11px] font-bold tracking-[4px] uppercase text-muted mb-3">Следующий кейс</p>
+            <p className="text-[11px] font-bold tracking-[4px] uppercase text-muted mb-3">{t('next_case')}</p>
             <h3 className="font-head font-[800] text-[clamp(28px,4vw,60px)] tracking-[-1px] text-ink
                            group-hover:text-gold transition-colors leading-none">
               {nextProject.title}
@@ -308,10 +337,10 @@ export default function WorkPage() {
       {/* ── FOOTER ── */}
       <footer className="border-t border-gold/10 bg-navy-2">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-8 flex items-center justify-between">
-          <p className="text-[13px] text-muted">© 2025 SAQ Digital Systems</p>
+          <p className="text-[13px] text-muted">© 2026 SAQ Creative Agency</p>
           <Link to="/#contact"
             className="text-[13px] text-gold hover:text-gold-glow transition-colors font-medium">
-            Обсудить проект →
+            {t('discuss_project')} →
           </Link>
         </div>
       </footer>

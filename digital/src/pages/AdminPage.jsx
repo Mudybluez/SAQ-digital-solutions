@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2, Edit2, LogOut, Check, AlertCircle, Eye, RefreshCw } from 'lucide-react'
 import { useContent } from '../context/ContentContext'
+import {
+  defaultHomepageContentMap,
+  defaultPrivacyContentMap,
+  defaultHomepageContentRU,
+  defaultPrivacyContentRU
+} from '../constants/defaultContent'
 
 const PREDEFINED_TECHS = [
   // Frontend
@@ -90,6 +96,8 @@ export default function AdminPage() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState('leads') // leads | portfolio | home_cms | privacy_cms
+  const [cmsLang, setCmsLang] = useState('ru') // ru | en | kk
+  const [translating, setTranslating] = useState(false)
 
   // Data States
   const [leads, setLeads] = useState([])
@@ -119,6 +127,47 @@ export default function AdminPage() {
     }
   }, [])
 
+  // Helper to load CMS site settings dynamically depending on selected language
+  const loadCmsSettings = async (tab, lang) => {
+    const key = tab === 'home_cms' ? `homepage_${lang}` : `privacy_${lang}`
+    try {
+      const res = await authFetch(`/api/projects/settings/${key}`)
+      const data = await res.json()
+      const defaultVal = tab === 'home_cms' 
+        ? (defaultHomepageContentMap[lang] || defaultHomepageContentRU)
+        : (defaultPrivacyContentMap[lang] || defaultPrivacyContentRU)
+
+      if (data.ok && data.value) {
+        if (tab === 'home_cms') {
+          setHomeForm({
+            ...defaultVal,
+            ...data.value,
+            hero: { ...defaultVal.hero, ...data.value.hero },
+            services: { ...defaultVal.services, ...data.value.services },
+            process: { ...defaultVal.process, ...data.value.process },
+            testimonials: { ...defaultVal.testimonials, ...data.value.testimonials },
+            contact: { ...defaultVal.contact, ...data.value.contact },
+            footer: { ...defaultVal.footer, ...data.value.footer },
+            techs: data.value.techs || defaultVal.techs,
+          })
+        } else {
+          setPrivacyForm({
+            ...defaultVal,
+            ...data.value
+          })
+        }
+      } else {
+        if (tab === 'home_cms') {
+          setHomeForm(defaultVal)
+        } else {
+          setPrivacyForm(defaultVal)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load settings in CMS:', err)
+    }
+  }
+
   // Load active tab data
   useEffect(() => {
     if (!isAuthenticated) return
@@ -128,13 +177,12 @@ export default function AdminPage() {
     } else if (activeTab === 'portfolio') {
       loadProjects()
     } else if (activeTab === 'home_cms') {
-      // Clone homepageContent to edit locally
-      setHomeForm(JSON.parse(JSON.stringify(homepageContent)))
+      loadCmsSettings('home_cms', cmsLang)
     } else if (activeTab === 'privacy_cms') {
-      setPrivacyForm(JSON.parse(JSON.stringify(privacyContent)))
+      loadCmsSettings('privacy_cms', cmsLang)
     }
     setCmsStatus({ success: '', error: '' })
-  }, [isAuthenticated, activeTab, homepageContent, privacyContent])
+  }, [isAuthenticated, activeTab, cmsLang])
 
   // Custom fetch with auth headers
   const authFetch = async (url, options = {}) => {
@@ -233,11 +281,144 @@ export default function AdminPage() {
     }
   }
 
+  // Project Form helpers for localization fields
+  const getProjectFieldValue = (field) => {
+    if (!editingProject) return ''
+    if (cmsLang === 'ru') {
+      return editingProject[field] || ''
+    }
+    return editingProject.translations?.[cmsLang]?.[field] || ''
+  }
+
+  const handleProjectFieldChange = (field, value) => {
+    if (cmsLang === 'ru') {
+      setEditingProject(prev => ({ ...prev, [field]: value }))
+    } else {
+      setEditingProject(prev => {
+        const trans = prev.translations || {}
+        const langData = trans[cmsLang] || {}
+        return {
+          ...prev,
+          translations: {
+            ...trans,
+            [cmsLang]: {
+              ...langData,
+              [field]: value
+            }
+          }
+        }
+      })
+    }
+  }
+
+  const handleAutoTranslate = async () => {
+    if (!editingProject) return
+    setTranslating(true)
+    setProjectFormError('')
+    setProjectFormSuccess('')
+
+    try {
+      // Gather active lang fields to translate
+      const sourceFields = {
+        title: getProjectFieldValue('title'),
+        description: getProjectFieldValue('description'),
+        category: getProjectFieldValue('category'),
+        overview: getProjectFieldValue('overview'),
+        challenge: getProjectFieldValue('challenge'),
+        solution: getProjectFieldValue('solution'),
+        results_title: getProjectFieldValue('results_title'),
+        solution_points: (getProjectFieldValue('solution_points') || '').split('\n').filter(Boolean),
+        results: (getProjectFieldValue('results') || '').split('\n').map(line => {
+          const parts = line.split('=')
+          return { num: parts[0]?.trim() || '', lbl: parts[1]?.trim() || '' }
+        }).filter(r => r.lbl),
+        facts: {
+          'Тип': getProjectFieldValue('facts_type'),
+          'AI-движок': getProjectFieldValue('facts_engine'),
+          'Технологии': getProjectFieldValue('facts_tech'),
+          'Архитектура': getProjectFieldValue('facts_arch')
+        }
+      }
+
+      const targetLangs = ['en', 'kk'].filter(l => l !== cmsLang)
+      const newTranslations = { ...(editingProject.translations || {}) }
+
+      for (const targetLang of targetLangs) {
+        const res = await authFetch('/api/projects/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fields: sourceFields,
+            from: cmsLang,
+            to: targetLang
+          })
+        })
+        const data = await res.json()
+        if (res.ok && data.ok && data.translated) {
+          const tr = data.translated
+          newTranslations[targetLang] = {
+            title: tr.title || '',
+            description: tr.description || '',
+            category: tr.category || '',
+            overview: tr.overview || '',
+            challenge: tr.challenge || '',
+            solution: tr.solution || '',
+            solution_points: Array.isArray(tr.solution_points) ? tr.solution_points.join('\n') : '',
+            results_title: tr.results_title || '',
+            results: Array.isArray(tr.results) ? tr.results.map(r => `${r.num} = ${r.lbl}`).join('\n') : '',
+            facts_type: tr.facts?.['Type'] || tr.facts?.['Тип'] || tr.facts?.['Түрі'] || '',
+            facts_engine: tr.facts?.['AI Engine'] || tr.facts?.['AI-движок'] || tr.facts?.['AI қозғалтқышы'] || '',
+            facts_tech: tr.facts?.['Technologies'] || tr.facts?.['Технологии'] || tr.facts?.['Технологиялар'] || '',
+            facts_arch: tr.facts?.['Architecture'] || tr.facts?.['Архитектура'] || tr.facts?.['Сәулеті'] || '',
+          }
+        } else {
+          throw new Error(data.error || `Не удалось перевести на язык: ${targetLang}`)
+        }
+      }
+
+      setEditingProject(prev => ({
+        ...prev,
+        translations: newTranslations
+      }))
+      setProjectFormSuccess('Автоперевод успешно выполнен на все языки! Проверьте вкладки EN и KK.')
+    } catch (err) {
+      setProjectFormError(err.message || 'Ошибка автоперевода')
+    } finally {
+      setTranslating(false)
+    }
+  }
+
   // Project Form handlers
   const openProjectForm = (project = null) => {
     setProjectFormError('')
     setProjectFormSuccess('')
     if (project) {
+      const deserializedTrans = {}
+      if (project.translations) {
+        for (const lang of ['en', 'kk']) {
+          const t = project.translations[lang]
+          if (t) {
+            deserializedTrans[lang] = {
+              title: t.title || '',
+              description: t.description || '',
+              category: t.category || '',
+              overview: t.overview || '',
+              challenge: t.challenge || '',
+              solution: t.solution || '',
+              solution_points: Array.isArray(t.solution_points) ? t.solution_points.join('\n') : '',
+              results_title: t.results_title || 'Результаты',
+              results: Array.isArray(t.results) 
+                ? t.results.map(r => `${r.num} = ${r.lbl}`).join('\n')
+                : '',
+              facts_type: t.facts?.['Тип'] || '',
+              facts_engine: t.facts?.['AI-движок'] || t.facts?.['Движок'] || '',
+              facts_tech: t.facts?.['Технологии'] || '',
+              facts_arch: t.facts?.['Архитектура'] || '',
+            }
+          }
+        }
+      }
+
       setEditingProject({
         ...project,
         tags: Array.isArray(project.tags) ? project.tags.join(', ') : '',
@@ -246,11 +427,11 @@ export default function AdminPage() {
           ? project.results.map(r => `${r.num} = ${r.lbl}`).join('\n')
           : '',
         screens: Array.isArray(project.screens) ? [...project.screens] : [],
-        // Make sure stats/facts exist
         facts_type: project.facts?.['Тип'] || '',
         facts_engine: project.facts?.['AI-движок'] || project.facts?.['Движок'] || '',
         facts_tech: project.facts?.['Технологии'] || '',
         facts_arch: project.facts?.['Архитектура'] || '',
+        translations: deserializedTrans
       })
     } else {
       setEditingProject({
@@ -258,9 +439,14 @@ export default function AdminPage() {
         overview: '', challenge: '', solution: '',
         tags: '', solution_points: '', results: '', screens: [],
         results_title: 'Результаты',
-        facts_type: '', facts_engine: '', facts_tech: '', facts_arch: ''
+        facts_type: '', facts_engine: '', facts_tech: '', facts_arch: '',
+        translations: {
+          en: { title: '', description: '', category: 'Web App', overview: '', challenge: '', solution: '', solution_points: '', results_title: 'Results', results: '', facts_type: '', facts_engine: '', facts_tech: '', facts_arch: '' },
+          kk: { title: '', description: '', category: 'Web App', overview: '', challenge: '', solution: '', solution_points: '', results_title: 'Нәтижелер', results: '', facts_type: '', facts_engine: '', facts_tech: '', facts_arch: '' }
+        }
       })
     }
+    setCmsLang('ru')
     setIsProjectFormOpen(true)
   }
 
@@ -287,6 +473,47 @@ export default function AdminPage() {
     if (editingProject.facts_tech) factsObj['Технологии'] = editingProject.facts_tech.trim()
     if (editingProject.facts_arch) factsObj['Архитектура'] = editingProject.facts_arch.trim()
 
+    // Process and serialize translations
+    const parsedTranslations = {}
+    if (editingProject.translations) {
+      for (const lang of ['en', 'kk']) {
+        const t = editingProject.translations[lang]
+        if (t && (t.title || t.description || t.overview)) {
+          const pts = t.solution_points 
+            ? t.solution_points.split('\n').map(p => p.trim()).filter(Boolean)
+            : []
+          const res = t.results
+            ? t.results.split('\n').map(line => {
+                const parts = line.split('=')
+                if (parts.length >= 2) {
+                  return { num: parts[0].trim(), lbl: parts.slice(1).join('=').trim() }
+                }
+                return null
+              }).filter(Boolean)
+            : []
+          
+          const fObj = {}
+          if (t.facts_type) fObj['Тип'] = t.facts_type.trim()
+          if (t.facts_engine) fObj['AI-движок'] = t.facts_engine.trim()
+          if (t.facts_tech) fObj['Технологии'] = t.facts_tech.trim()
+          if (t.facts_arch) fObj['Архитектура'] = t.facts_arch.trim()
+
+          parsedTranslations[lang] = {
+            title: (t.title || '').trim(),
+            description: (t.description || '').trim(),
+            category: (t.category || '').trim(),
+            overview: (t.overview || '').trim(),
+            challenge: (t.challenge || '').trim(),
+            solution: (t.solution || '').trim(),
+            solution_points: pts,
+            results_title: (t.results_title || 'Результаты').trim(),
+            results: res,
+            facts: fObj
+          }
+        }
+      }
+    }
+
     const payload = {
       title: editingProject.title.trim(),
       slug: editingProject.slug.trim(),
@@ -302,7 +529,8 @@ export default function AdminPage() {
       solution_points: pointsArr,
       results: resultsArr,
       screens: screensArr,
-      facts: factsObj
+      facts: factsObj,
+      translations: parsedTranslations
     }
 
     try {
@@ -589,9 +817,43 @@ export default function AdminPage() {
               {/* PROJECT FORM MODAL */}
               {isProjectFormOpen && (
                 <div className="mb-12 bg-navy-2 border border-gold/20 p-6 md:p-8">
-                  <h3 className="font-head font-[800] text-xl text-gold mb-6 uppercase tracking-[1px]">
+                  <h3 className="font-head font-[800] text-xl text-gold mb-4 uppercase tracking-[1px]">
                     {editingProject.id ? `Редактирование кейса ID: ${editingProject.id}` : 'Создание нового кейса'}
                   </h3>
+
+                  {/* Language Switcher and Auto-Translate Button for Portfolio form */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-4 mb-6">
+                    <div className="flex items-center gap-2 bg-navy p-1 border border-white/5">
+                      {['ru', 'en', 'kk'].map((lang) => (
+                        <button
+                          key={lang}
+                          type="button"
+                          onClick={() => setCmsLang(lang)}
+                          className={`px-4 py-1.5 font-head font-[700] text-xs uppercase tracking-[1px] transition-colors cursor-pointer ${
+                            cmsLang === lang ? 'bg-gold text-navy' : 'text-muted hover:text-ink'
+                          }`}
+                        >
+                          {lang === 'ru' ? 'Русский' : lang === 'en' ? 'English' : 'Қазақша'}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleAutoTranslate}
+                      disabled={translating}
+                      className="bg-navy border border-gold/30 hover:border-gold text-gold hover:bg-gold/5 px-4 py-2 font-head font-[800] text-xs uppercase tracking-[1.5px] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {translating ? (
+                        <>
+                          <RefreshCw size={13} className="animate-spin" />
+                          Переводим...
+                        </>
+                      ) : (
+                        'Автоперевод на все языки'
+                      )}
+                    </button>
+                  </div>
 
                   <form onSubmit={handleProjectSubmit} className="space-y-6">
                     {projectFormError && (
@@ -609,19 +871,19 @@ export default function AdminPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Название кейса *</label>
-                        <input type="text" required value={editingProject.title} onChange={e => setEditingProject({...editingProject, title: e.target.value})} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold" />
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Название кейса * ({cmsLang.toUpperCase()})</label>
+                        <input type="text" required value={getProjectFieldValue('title')} onChange={e => handleProjectFieldChange('title', e.target.value)} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Slug (URL индификатор) *</label>
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Slug (URL индификатор) * (Общий)</label>
                         <input type="text" required placeholder="zenscribe" value={editingProject.slug} onChange={e => setEditingProject({...editingProject, slug: e.target.value})} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold font-mono" />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Категория *</label>
-                        <select value={editingProject.category} onChange={e => setEditingProject({...editingProject, category: e.target.value})} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold">
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Категория * ({cmsLang.toUpperCase()})</label>
+                        <select value={getProjectFieldValue('category')} onChange={e => handleProjectFieldChange('category', e.target.value)} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold">
                           <option value="Web App">Web App</option>
                           <option value="Landing Page">Landing Page</option>
                           <option value="Automation">Automation / Bots</option>
@@ -629,14 +891,14 @@ export default function AdminPage() {
                         </select>
                       </div>
                       <div className="md:col-span-2">
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Теги (через запятую) *</label>
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Теги (через запятую) * (Общие)</label>
                         <input type="text" placeholder="AI, SAAS, REACT" value={editingProject.tags} onChange={e => setEditingProject({...editingProject, tags: e.target.value})} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold font-mono" />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Обложка кейса *</label>
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Обложка кейса * (Общая)</label>
                         <div className="flex items-start gap-4">
                           {editingProject.image && (
                             <div className="w-16 h-16 bg-navy border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
@@ -655,72 +917,72 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ссылка на проект (Live Link)</label>
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ссылка на проект (Live Link) (Общая)</label>
                         <input type="text" placeholder="https://example.com" value={editingProject.link || ''} onChange={e => setEditingProject({...editingProject, link: e.target.value})} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-ink focus:outline-none focus:border-gold" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Краткое описание (для карточки) *</label>
-                      <textarea required value={editingProject.description} onChange={e => setEditingProject({...editingProject, description: e.target.value})} rows={2} className="w-full bg-navy border border-white/10 p-4 text-ink focus:outline-none focus:border-gold" />
+                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Краткое описание * ({cmsLang.toUpperCase()})</label>
+                      <textarea required value={getProjectFieldValue('description')} onChange={e => handleProjectFieldChange('description', e.target.value)} rows={2} className="w-full bg-navy border border-white/10 p-4 text-ink focus:outline-none focus:border-gold" />
                     </div>
 
                     {/* DETAILS SECTIONS */}
                     <div className="border-t border-white/10 pt-6 space-y-6">
-                      <h4 className="font-head text-sm text-gold uppercase tracking-[1.5px]">Характеристики (Facts)</h4>
+                      <h4 className="font-head text-sm text-gold uppercase tracking-[1.5px]">Характеристики (Facts) ({cmsLang.toUpperCase()})</h4>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-2">Тип</label>
-                          <input type="text" placeholder="AI SaaS / Web App" value={editingProject.facts_type} onChange={e => setEditingProject({...editingProject, facts_type: e.target.value})} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
+                          <input type="text" placeholder="AI SaaS / Web App" value={getProjectFieldValue('facts_type')} onChange={e => handleProjectFieldChange('facts_type', e.target.value)} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
                         </div>
                         <div>
                           <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-2">AI-Движок</label>
-                          <input type="text" placeholder="Gemini 2.5 Flash" value={editingProject.facts_engine} onChange={e => setEditingProject({...editingProject, facts_engine: e.target.value})} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
+                          <input type="text" placeholder="Gemini 2.5 Flash" value={getProjectFieldValue('facts_engine')} onChange={e => handleProjectFieldChange('facts_engine', e.target.value)} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
                         </div>
                         <div>
                           <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-2">Технологии</label>
-                          <input type="text" placeholder="React, Node.js" value={editingProject.facts_tech} onChange={e => setEditingProject({...editingProject, facts_tech: e.target.value})} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
+                          <input type="text" placeholder="React, Node.js" value={getProjectFieldValue('facts_tech')} onChange={e => handleProjectFieldChange('facts_tech', e.target.value)} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
                         </div>
                         <div>
                           <label className="block text-[9px] text-muted uppercase tracking-[1px] mb-2">Архитектура</label>
-                          <input type="text" placeholder="Микросервисы" value={editingProject.facts_arch} onChange={e => setEditingProject({...editingProject, facts_arch: e.target.value})} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
+                          <input type="text" placeholder="Микросервисы" value={getProjectFieldValue('facts_arch')} onChange={e => handleProjectFieldChange('facts_arch', e.target.value)} className="w-full bg-navy border border-white/10 px-3 py-2 text-ink text-sm focus:outline-none focus:border-gold" />
                         </div>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="md:col-span-2">
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Обзор проекта (Overview) *</label>
-                        <textarea required value={editingProject.overview} onChange={e => setEditingProject({...editingProject, overview: e.target.value})} rows={5} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Обзор проекта (Overview) * ({cmsLang.toUpperCase()})</label>
+                        <textarea required value={getProjectFieldValue('overview')} onChange={e => handleProjectFieldChange('overview', e.target.value)} rows={5} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Проблема (Challenge) *</label>
-                        <textarea required value={editingProject.challenge} onChange={e => setEditingProject({...editingProject, challenge: e.target.value})} rows={5} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Проблема (Challenge) * ({cmsLang.toUpperCase()})</label>
+                        <textarea required value={getProjectFieldValue('challenge')} onChange={e => handleProjectFieldChange('challenge', e.target.value)} rows={5} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Решение (Solution) *</label>
-                      <textarea required value={editingProject.solution} onChange={e => setEditingProject({...editingProject, solution: e.target.value})} rows={3} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
+                      <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Решение (Solution) * ({cmsLang.toUpperCase()})</label>
+                      <textarea required value={getProjectFieldValue('solution')} onChange={e => handleProjectFieldChange('solution', e.target.value)} rows={3} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ключевые фичи решения (по одной строке)</label>
-                        <textarea rows={5} placeholder="Интеграция с API&#10;Оплата Kaspi" value={editingProject.solution_points} onChange={e => setEditingProject({...editingProject, solution_points: e.target.value})} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold font-mono" />
+                        <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-2">Ключевые фичи решения (по одной строке) ({cmsLang.toUpperCase()})</label>
+                        <textarea rows={5} placeholder="Интеграция с API&#10;Оплата Kaspi" value={getProjectFieldValue('solution_points')} onChange={e => handleProjectFieldChange('solution_points', e.target.value)} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold font-mono" />
                       </div>
                       <div>
                         <div className="flex justify-between items-center mb-2">
-                          <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted">Показатели/Результаты (по одной строке: Число = Описание)</label>
-                          <input type="text" placeholder="Заголовок результатов" value={editingProject.results_title} onChange={e => setEditingProject({...editingProject, results_title: e.target.value})} className="bg-navy border border-white/10 text-xs px-2 py-1 text-gold max-w-[150px] focus:outline-none focus:border-gold" />
+                          <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted">Показатели/Результаты ({cmsLang.toUpperCase()}) (Число = Описание)</label>
+                          <input type="text" placeholder="Заголовок результатов" value={getProjectFieldValue('results_title')} onChange={e => handleProjectFieldChange('results_title', e.target.value)} className="bg-navy border border-white/10 text-xs px-2 py-1 text-gold max-w-[150px] focus:outline-none focus:border-gold" />
                         </div>
-                        <textarea rows={5} placeholder="3 языка = EN, RU, KZ&#10;60 000+ = слов сгенерировано" value={editingProject.results} onChange={e => setEditingProject({...editingProject, results: e.target.value})} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold font-mono" />
+                        <textarea rows={5} placeholder="3 языка = EN, RU, KZ&#10;60 000+ = слов сгенерировано" value={getProjectFieldValue('results')} onChange={e => handleProjectFieldChange('results', e.target.value)} className="w-full bg-navy border border-white/10 p-4 text-ink text-sm focus:outline-none focus:border-gold font-mono" />
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-[10px] font-semibold tracking-[2px] uppercase text-muted mb-3">
-                        Скриншоты проекта ({editingProject.screens ? editingProject.screens.length : 0})
+                        Скриншоты проекта ({editingProject.screens ? editingProject.screens.length : 0}) (Общие)
                       </label>
                       
                       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -820,11 +1082,27 @@ export default function AdminPage() {
                   <p className="text-xs text-muted font-mono tracking-[1px] mt-1">Редактирование всех текстов главного экрана агентства</p>
                 </div>
                 <button
-                  onClick={() => handleSaveCMS('homepage', homeForm)}
+                  onClick={() => handleSaveCMS('homepage_' + cmsLang, homeForm)}
                   className="bg-gold hover:bg-gold-glow text-navy px-6 py-3 font-head font-[800] text-xs uppercase tracking-[1px] transition-colors cursor-pointer"
                 >
                   Сохранить изменения
                 </button>
+              </div>
+
+              {/* Language Switcher for Homepage form */}
+              <div className="flex items-center gap-2 bg-navy p-1 border border-white/5 mb-6 w-fit">
+                {['ru', 'en', 'kk'].map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => setCmsLang(lang)}
+                    className={`px-4 py-1.5 font-head font-[700] text-xs uppercase tracking-[1px] transition-colors cursor-pointer ${
+                      cmsLang === lang ? 'bg-gold text-navy' : 'text-muted hover:text-ink'
+                    }`}
+                  >
+                    {lang === 'ru' ? 'Русский' : lang === 'en' ? 'English' : 'Қазақша'}
+                  </button>
+                ))}
               </div>
 
               <div className="space-y-10">
@@ -1280,7 +1558,7 @@ export default function AdminPage() {
                 {/* SAVE BUTTON */}
                 <div className="flex justify-end pt-4">
                   <button
-                    onClick={() => handleSaveCMS('homepage', homeForm)}
+                    onClick={() => handleSaveCMS('homepage_' + cmsLang, homeForm)}
                     className="bg-gold hover:bg-gold-glow text-navy px-8 py-4 font-head font-[800] tracking-[1px] uppercase text-sm transition-colors cursor-pointer"
                   >
                     Сохранить все изменения глав. страницы
@@ -1299,11 +1577,27 @@ export default function AdminPage() {
                   <p className="text-xs text-muted font-mono tracking-[1px] mt-1">Редактирование разделов, статей и юридической информации</p>
                 </div>
                 <button
-                  onClick={() => handleSaveCMS('privacy', privacyForm)}
+                  onClick={() => handleSaveCMS('privacy_' + cmsLang, privacyForm)}
                   className="bg-gold hover:bg-gold-glow text-navy px-6 py-3 font-head font-[800] text-xs uppercase tracking-[1px] transition-colors cursor-pointer"
                 >
                   Сохранить изменения
                 </button>
+              </div>
+
+              {/* Language Switcher for Privacy form */}
+              <div className="flex items-center gap-2 bg-navy p-1 border border-white/5 mb-6 w-fit">
+                {['ru', 'en', 'kk'].map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => setCmsLang(lang)}
+                    className={`px-4 py-1.5 font-head font-[700] text-xs uppercase tracking-[1px] transition-colors cursor-pointer ${
+                      cmsLang === lang ? 'bg-gold text-navy' : 'text-muted hover:text-ink'
+                    }`}
+                  >
+                    {lang === 'ru' ? 'Русский' : lang === 'en' ? 'English' : 'Қазақша'}
+                  </button>
+                ))}
               </div>
 
               <div className="space-y-8">
@@ -1381,7 +1675,7 @@ export default function AdminPage() {
                 {/* SAVE BUTTON */}
                 <div className="flex justify-end pt-4">
                   <button
-                    onClick={() => handleSaveCMS('privacy', privacyForm)}
+                    onClick={() => handleSaveCMS('privacy_' + cmsLang, privacyForm)}
                     className="bg-gold hover:bg-gold-glow text-navy px-8 py-4 font-head font-[800] tracking-[1px] uppercase text-sm transition-colors cursor-pointer"
                   >
                     Сохранить все изменения Политики

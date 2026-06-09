@@ -4,8 +4,32 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 import { projects as staticProjects } from '../data/projects'
+import { useTranslation } from 'react-i18next'
+import { useContent } from '../context/ContentContext'
 
 const filters = ['Все', 'Web App', 'Лендинг']
+
+const translateProject = (p, lang) => {
+  if (lang === 'ru' || !p.translations || !p.translations[lang]) {
+    return p
+  }
+  const t = p.translations[lang]
+  return {
+    ...p,
+    title: t.title || p.title,
+    subtitle: t.subtitle || t.description || p.subtitle,
+    desc: t.desc || t.description || p.desc,
+    description: t.description || p.description,
+    category: t.category || p.category,
+    overview: t.overview || p.overview,
+    challenge: t.challenge || p.challenge,
+    solution: t.solution || p.solution,
+    solution_points: t.solution_points || p.solution_points,
+    results_title: t.results_title || p.results_title,
+    results: t.results || p.results,
+    facts: t.facts || p.facts
+  }
+}
 
 const ProjectCard = forwardRef(function ProjectCard({ p, i, inView }, ref) {
   return (
@@ -88,6 +112,8 @@ const ProjectCard = forwardRef(function ProjectCard({ p, i, inView }, ref) {
 })
 
 export default function Portfolio() {
+  const { t } = useTranslation()
+  const { language } = useContent()
   const [active, setActive] = useState('Все')
   const [ref, inView]       = useInView()
   const [projectsList, setProjectsList] = useState(staticProjects)
@@ -114,6 +140,15 @@ export default function Portfolio() {
   }, [])
 
   const visible = active === 'Все' ? projectsList : projectsList.filter(p => p.cat === active)
+  const translatedVisible = visible.map(p => translateProject(p, language))
+
+  const getFilterLabel = (f) => {
+    if (f === 'Все') return t('all_works')
+    if (f === 'Лендинг') {
+      return language === 'en' ? 'Landing' : 'Лендинг'
+    }
+    return f
+  }
 
   return (
     <section id="portfolio" className="relative bg-navy-2">
@@ -129,14 +164,18 @@ export default function Portfolio() {
               transition={{ duration: 0.6 }}
               className="flex items-center gap-3 text-xs font-bold tracking-[4px] uppercase text-gold mb-4"
             >
-              <span className="w-8 h-px bg-gold" />Наши работы
+              <span className="w-8 h-px bg-gold" />{t('our_works', 'Наши работы')}
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.1 }}
               className="font-head font-[800] text-[clamp(48px,6vw,88px)] leading-[0.95] tracking-[-1px]"
             >
-              Порт<span className="text-gold">фолио</span>
+              {language === 'en' ? (
+                <>Port<span className="text-gold">folio</span></>
+              ) : (
+                <>Порт<span className="text-gold">фолио</span></>
+              )}
             </motion.h2>
           </div>
 
@@ -153,7 +192,7 @@ export default function Portfolio() {
                     ? 'border-gold text-gold bg-gold/5'
                     : 'border-transparent text-muted hover:border-gold/30 hover:text-gold'}`}
               >
-                {f}
+                {getFilterLabel(f)}
               </button>
             ))}
           </motion.div>
@@ -162,7 +201,7 @@ export default function Portfolio() {
         {/* Grid */}
         <motion.div layout className="grid grid-cols-1 lg:grid-cols-12 gap-1">
           <AnimatePresence mode="popLayout">
-            {visible.map((p, i) => (
+            {translatedVisible.map((p, i) => (
               <ProjectCard key={p.id} p={p} i={i} inView={inView} />
             ))}
           </AnimatePresence>

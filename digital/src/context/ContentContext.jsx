@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { defaultHomepageContent, defaultPrivacyContent } from '../constants/defaultContent'
+import i18n from '../i18n'
+import { defaultHomepageContentMap, defaultPrivacyContentMap, defaultHomepageContentRU, defaultPrivacyContentRU } from '../constants/defaultContent'
 
 const ContentContext = createContext(null)
 
 export function ContentProvider({ children }) {
-  const [homepageContent, setHomepageContent] = useState(defaultHomepageContent)
-  const [privacyContent, setPrivacyContent] = useState(defaultPrivacyContent)
+  const [language, setLanguage] = useState(localStorage.getItem('i18nextLng') || 'ru')
+  const [homepageContent, setHomepageContent] = useState(defaultHomepageContentMap[language] || defaultHomepageContentRU)
+  const [privacyContent, setPrivacyContent] = useState(defaultPrivacyContentMap[language] || defaultPrivacyContentRU)
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
 
@@ -28,31 +30,42 @@ export function ContentProvider({ children }) {
     }
   }
 
-  const fetchContent = async () => {
+  const fetchContent = async (lang = language) => {
     try {
+      const homeKey = `homepage_${lang}`
+      const privacyKey = `privacy_${lang}`
+
       const [homeRes, privacyRes] = await Promise.all([
-        fetch('/api/projects/settings/homepage').then(r => r.json()).catch(() => ({})),
-        fetch('/api/projects/settings/privacy').then(r => r.json()).catch(() => ({}))
+        fetch(`/api/projects/settings/${homeKey}`).then(r => r.json()).catch(() => ({})),
+        fetch(`/api/projects/settings/${privacyKey}`).then(r => r.json()).catch(() => ({}))
       ])
+
+      const defaultHome = defaultHomepageContentMap[lang] || defaultHomepageContentRU
+      const defaultPriv = defaultPrivacyContentMap[lang] || defaultPrivacyContentRU
 
       if (homeRes.ok && homeRes.value) {
         setHomepageContent({
-          ...defaultHomepageContent,
+          ...defaultHome,
           ...homeRes.value,
-          hero: { ...defaultHomepageContent.hero, ...homeRes.value.hero },
-          services: { ...defaultHomepageContent.services, ...homeRes.value.services },
-          process: { ...defaultHomepageContent.process, ...homeRes.value.process },
-          testimonials: { ...defaultHomepageContent.testimonials, ...homeRes.value.testimonials },
-          contact: { ...defaultHomepageContent.contact, ...homeRes.value.contact },
-          footer: { ...defaultHomepageContent.footer, ...homeRes.value.footer },
-          techs: homeRes.value.techs || defaultHomepageContent.techs,
+          hero: { ...defaultHome.hero, ...homeRes.value.hero },
+          services: { ...defaultHome.services, ...homeRes.value.services },
+          process: { ...defaultHome.process, ...homeRes.value.process },
+          testimonials: { ...defaultHome.testimonials, ...homeRes.value.testimonials },
+          contact: { ...defaultHome.contact, ...homeRes.value.contact },
+          footer: { ...defaultHome.footer, ...homeRes.value.footer },
+          techs: homeRes.value.techs || defaultHome.techs,
         })
+      } else {
+        setHomepageContent(defaultHome)
       }
+
       if (privacyRes.ok && privacyRes.value) {
         setPrivacyContent({
-          ...defaultPrivacyContent,
+          ...defaultPriv,
           ...privacyRes.value
         })
+      } else {
+        setPrivacyContent(defaultPriv)
       }
     } catch (err) {
       console.error('Failed to fetch site content settings:', err)
@@ -61,12 +74,27 @@ export function ContentProvider({ children }) {
     }
   }
 
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang)
+    setLanguage(lang)
+    localStorage.setItem('i18nextLng', lang)
+  }
+
   useEffect(() => {
-    fetchContent()
-  }, [])
+    fetchContent(language)
+  }, [language])
 
   return (
-    <ContentContext.Provider value={{ homepageContent, privacyContent, refreshContent: fetchContent, loading, theme, toggleTheme }}>
+    <ContentContext.Provider value={{
+      language,
+      changeLanguage,
+      homepageContent,
+      privacyContent,
+      refreshContent: () => fetchContent(language),
+      loading,
+      theme,
+      toggleTheme
+    }}>
       {children}
     </ContentContext.Provider>
   )

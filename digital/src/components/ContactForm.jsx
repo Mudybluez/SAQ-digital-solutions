@@ -3,15 +3,10 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { useContent } from '../context/ContentContext'
-
-const PROJECT_TYPES = [
-  { value: 'landing', label: 'Лендинг' },
-  { value: 'business', label: 'Бизнес-сайт' },
-  { value: 'platform', label: 'Кастомная веб-платформа' },
-  { value: 'unknown', label: 'Другое / Пока не знаю' }
-]
+import { useTranslation } from 'react-i18next'
 
 export default function ContactForm() {
+  const { t } = useTranslation()
   const [ref, inView] = useInView()
   const { homepageContent } = useContent()
   const { contact } = homepageContent
@@ -21,12 +16,19 @@ export default function ContactForm() {
   const [sent, setSent]     = useState(false)
   const [error, setError]   = useState('')
 
+  const projectTypes = [
+    { value: 'landing', label: t('type_landing') },
+    { value: 'business', label: t('type_business') },
+    { value: 'platform', label: t('type_platform') },
+    { value: 'unknown', label: t('type_unknown') }
+  ]
+
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!agreed) { setError('Пожалуйста, дайте согласие на обработку данных'); return }
-    if (!form.name.trim() || !form.contact.trim()) { setError('Заполните имя и контакт'); return }
+    if (!agreed) { setError(t('contact_err_consent')); return }
+    if (!form.name.trim() || !form.contact.trim()) { setError(t('contact_err_fields')); return }
     setError('')
 
     const payload = {
@@ -50,10 +52,10 @@ export default function ContactForm() {
       if (res.ok && data.ok) {
         setSent(true)
       } else {
-        throw new Error(data.error || 'Не удалось отправить заявку. Пожалуйста, попробуйте позже.')
+        throw new Error(data.error || t('contact_err_submit'))
       }
     } catch (err) {
-      setError(err.message || 'Ошибка отправки заявки. Пожалуйста, напишите напрямую в Telegram.')
+      setError(err.message || t('contact_err_network'))
     }
   }
 
@@ -92,7 +94,7 @@ export default function ContactForm() {
             </p>
 
             <div className="space-y-3 text-[14px]">
-              <p className="text-muted/60 text-[12px] uppercase tracking-[2px] font-medium mb-4">Или напишите напрямую:</p>
+              <p className="text-muted/60 text-[12px] uppercase tracking-[2px] font-medium mb-4">{t('contact_or_direct')}</p>
               <a href="https://t.me/saq_digital_systems" target="_blank" rel="noopener"
                  className="flex items-center gap-3 text-gold hover:text-gold-glow transition-colors font-mono">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -104,109 +106,109 @@ export default function ContactForm() {
                  className="flex items-center gap-3 text-gold hover:text-gold-glow transition-colors font-mono">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                WhatsApp: +7 747 184 6771
-              </a>
-            </div>
-          </motion.div>
+              </svg>
+              WhatsApp: +7 747 184 6771
+            </a>
+          </div>
+        </motion.div>
 
-          {/* RIGHT — Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            {sent ? (
-              <div className="flex flex-col items-center justify-center py-24 text-center">
-                <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-6">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8951A" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12"/>
+        {/* RIGHT — Form */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }} animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          {sent ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-16 h-16 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mb-6">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E8951A" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <h3 className="font-head font-[800] text-3xl text-ink mb-3">{t('contact_success')}</h3>
+              <p className="text-muted text-[15px] mb-8">{t('contact_success_desc')}</p>
+              <button onClick={() => setSent(false)}
+                className="text-[13px] text-gold/60 hover:text-gold border-b border-gold/20 hover:border-gold transition-colors">
+                {t('contact_send_another')}
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name */}
+              <div>
+                <label className={labelCls}>{t('contact_label_name')}</label>
+                <input type="text" placeholder={contact.placeholder_name}
+                  value={form.name} onChange={set('name')}
+                  className={inputCls} />
+              </div>
+
+              {/* Contact */}
+              <div>
+                <label className={labelCls}>{t('contact_label_contact')}</label>
+                <input type="text" placeholder={contact.placeholder_contact}
+                  value={form.contact} onChange={set('contact')}
+                  className={inputCls} />
+              </div>
+
+              {/* Project type */}
+              <div>
+                <label className={labelCls}>{t('contact_label_type')}</label>
+                <div className="relative">
+                  <select value={form.type} onChange={set('type')}
+                    className={`${inputCls} appearance-none cursor-pointer pr-10`}>
+                    {projectTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                  <svg className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9"/>
                   </svg>
                 </div>
-                <h3 className="font-head font-[800] text-3xl text-ink mb-3">Заявка отправлена!</h3>
-                <p className="text-muted text-[15px] mb-8">Спасибо за обращение! Мы свяжемся с вами в ближайшее время для обсуждения деталей.</p>
-                <button onClick={() => setSent(false)}
-                  className="text-[13px] text-gold/60 hover:text-gold border-b border-gold/20 hover:border-gold transition-colors">
-                  Отправить ещё одну заявку
-                </button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name */}
-                <div>
-                  <label className={labelCls}>Имя</label>
-                  <input type="text" placeholder={contact.placeholder_name}
-                    value={form.name} onChange={set('name')}
-                    className={inputCls} />
-                </div>
 
-                {/* Contact */}
-                <div>
-                  <label className={labelCls}>Телефон / Telegram</label>
-                  <input type="text" placeholder={contact.placeholder_contact}
-                    value={form.contact} onChange={set('contact')}
-                    className={inputCls} />
-                </div>
+               {/* Description */}
+              <div>
+                <label className={labelCls}>{t('contact_label_desc')}</label>
+                <textarea placeholder={contact.placeholder_message}
+                  rows={4} value={form.desc} onChange={set('desc')}
+                  className={`${inputCls} resize-y min-h-[110px]`} />
+              </div>
 
-                {/* Project type */}
-                <div>
-                  <label className={labelCls}>Тип проекта</label>
-                  <div className="relative">
-                    <select value={form.type} onChange={set('type')}
-                      className={`${inputCls} appearance-none cursor-pointer pr-10`}>
-                      {PROJECT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
-                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="6 9 12 15 18 9"/>
+              {/* Honeypot */}
+              <input type="text" name="company" value={form.company} onChange={set('company')} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+
+              {/* Privacy */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div
+                  onClick={() => setAgreed(v => !v)}
+                  className={`mt-0.5 w-5 h-5 shrink-0 border transition-all duration-200 flex items-center justify-center
+                    ${agreed ? 'bg-gold border-gold' : 'border-white/20 group-hover:border-gold/40'}`}
+                >
+                  {agreed && (
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                      <polyline points="2 6 5 9 10 3" stroke="#07090F" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
-                  </div>
+                  )}
                 </div>
+                <span className="text-[13px] text-muted/70 leading-[1.5]">
+                  {contact.checkbox_text || 'Я согласен с'}{' '}
+                  <Link to="/privacy" target="_blank" rel="noopener"
+                     className="text-muted underline underline-offset-2 hover:text-ink transition-colors">
+                    {contact.checkbox_link || 'Политикой конфиденциальности'}
+                  </Link>
+                </span>
+              </label>
 
-                 {/* Description */}
-                <div>
-                  <label className={labelCls}>Описание</label>
-                  <textarea placeholder={contact.placeholder_message}
-                    rows={4} value={form.desc} onChange={set('desc')}
-                    className={`${inputCls} resize-y min-h-[110px]`} />
-                </div>
+              {error && <p className="text-[13px] text-red-400">{error}</p>}
 
-                {/* Honeypot */}
-                <input type="text" name="company" value={form.company} onChange={set('company')} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-
-                {/* Privacy */}
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <div
-                    onClick={() => setAgreed(v => !v)}
-                    className={`mt-0.5 w-5 h-5 shrink-0 border transition-all duration-200 flex items-center justify-center
-                      ${agreed ? 'bg-gold border-gold' : 'border-white/20 group-hover:border-gold/40'}`}
-                  >
-                    {agreed && (
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                        <polyline points="2 6 5 9 10 3" stroke="#07090F" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-[13px] text-muted/70 leading-[1.5]">
-                    {contact.checkbox_text || 'Я согласен с'}{' '}
-                    <Link to="/privacy" target="_blank" rel="noopener"
-                       className="text-muted underline underline-offset-2 hover:text-ink transition-colors">
-                      {contact.checkbox_link || 'Политикой конфиденциальности'}
-                    </Link>
-                  </span>
-                </label>
-
-                {error && <p className="text-[13px] text-red-400">{error}</p>}
-
-                {/* Submit */}
-                <button type="submit"
-                  className="w-full bg-gold text-navy font-head font-[800] text-[17px] tracking-[-0.3px]
-                             py-4 hover:bg-gold-glow active:scale-[0.99] transition-all duration-200 mt-2">
-                  {contact.submit_btn}
-                </button>
-              </form>
-            )}
-          </motion.div>
-        </div>
+              {/* Submit */}
+              <button type="submit"
+                className="w-full bg-gold text-navy font-head font-[800] text-[17px] tracking-[-0.3px]
+                           py-4 hover:bg-gold-glow active:scale-[0.99] transition-all duration-200 mt-2">
+                {contact.submit_btn}
+              </button>
+            </form>
+          )}
+        </motion.div>
       </div>
-    </section>
-  )
+    </div>
+  </section>
+)
 }

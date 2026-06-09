@@ -2,8 +2,10 @@ import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 export default function PrivacyPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { privacyContent, theme } = useContent()
 
@@ -28,7 +30,7 @@ export default function PrivacyPage() {
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-muted hover:text-gold transition-colors text-sm"
           >
-            <ArrowLeft size={15} /> На главную
+            <ArrowLeft size={15} /> {t('go_home')}
           </button>
         </div>
       </header>

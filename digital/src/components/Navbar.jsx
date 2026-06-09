@@ -2,18 +2,20 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 const links = [
-  { label: 'Услуги',    href: '#services' },
-  { label: 'Процесс',   href: '#process'  },
-  { label: 'Портфолио', href: '#portfolio'},
-  { label: 'О нас',     href: '#about'    },
+  { labelKey: 'nav_services',  href: '#services' },
+  { labelKey: 'nav_process',   href: '#process'  },
+  { labelKey: 'nav_portfolio', href: '#portfolio'},
+  { labelKey: 'nav_about',     href: '#about'    },
 ]
 
 export default function Navbar() {
+  const { t } = useTranslation()
   const [scrolled, setScrolled] = useState(false)
   const [open,     setOpen]     = useState(false)
-  const { theme, toggleTheme } = useContent()
+  const { theme, toggleTheme, language, changeLanguage } = useContent()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -43,22 +45,41 @@ export default function Navbar() {
         </a>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-9">
+        <ul className="hidden md:flex items-center gap-8">
           {links.map(l => (
             <li key={l.href}>
               <a
                 href={l.href}
                 className="text-xs font-semibold tracking-[2px] uppercase text-muted hover:text-gold transition-colors duration-200"
               >
-                {l.label}
+                {t(l.labelKey)}
               </a>
             </li>
           ))}
+          
+          {/* Language Switcher */}
+          <li className="flex items-center mr-2 border-l border-gold/15 pl-4 gap-1.5 text-[10px] font-bold tracking-wider">
+            {['RU', 'EN', 'KK'].map((lang) => {
+              const code = lang.toLowerCase()
+              return (
+                <button
+                  key={code}
+                  onClick={() => changeLanguage(code)}
+                  className={`px-1 py-0.5 transition-colors cursor-pointer ${
+                    language === code ? 'text-gold border-b border-gold font-extrabold' : 'text-muted hover:text-gold'
+                  }`}
+                >
+                  {lang}
+                </button>
+              )
+            })}
+          </li>
+
           <li>
             <button
               onClick={toggleTheme}
               className="text-muted hover:text-gold transition-colors p-1.5 focus:outline-none flex items-center justify-center cursor-pointer"
-              title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+              title={theme === 'dark' ? t('theme_light') : t('theme_dark')}
             >
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
@@ -68,17 +89,35 @@ export default function Navbar() {
               href="#contact"
               className="clip-hex bg-gold text-navy text-xs font-bold tracking-[1.5px] uppercase px-6 py-3 hover:bg-gold-glow transition-colors duration-200"
             >
-              Связаться
+              {t('nav_contact')}
             </a>
           </li>
         </ul>
 
         {/* Mobile controls */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
+          {/* Language switcher for mobile quick access */}
+          <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider border-r border-gold/15 pr-2.5 mr-0.5">
+            {['RU', 'EN', 'KK'].map((lang) => {
+              const code = lang.toLowerCase()
+              return (
+                <button
+                  key={code}
+                  onClick={() => changeLanguage(code)}
+                  className={`px-1 py-0.5 transition-colors cursor-pointer ${
+                    language === code ? 'text-gold border-b border-gold font-extrabold' : 'text-muted hover:text-gold'
+                  }`}
+                >
+                  {lang}
+                </button>
+              )
+            })}
+          </div>
+
           <button
             onClick={toggleTheme}
             className="text-gold p-1 focus:outline-none flex items-center justify-center cursor-pointer"
-            title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+            title={theme === 'dark' ? t('theme_light') : t('theme_dark')}
           >
             {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
           </button>
@@ -86,7 +125,7 @@ export default function Navbar() {
           <button
             className="text-gold p-1"
             onClick={() => setOpen(v => !v)}
-            aria-label="Меню"
+            aria-label={t('nav_services')}
           >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -101,7 +140,7 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{   opacity: 0, x: '100%' }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-0 z-40 bg-navy/98 backdrop-blur-xl flex flex-col items-center justify-center gap-10 md:hidden"
+            className="fixed inset-0 z-40 bg-navy/98 backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden"
           >
             {links.map(l => (
               <a
@@ -110,15 +149,16 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
                 className="font-head text-4xl font-[800] tracking-[-1px] text-ink hover:text-gold transition-colors"
               >
-                {l.label}
+                {t(l.labelKey)}
               </a>
             ))}
+
             <a
               href="#contact"
               onClick={() => setOpen(false)}
               className="clip-hex bg-gold text-navy font-bold tracking-[2px] uppercase px-10 py-4 text-sm mt-4"
             >
-              Связаться
+              {t('nav_contact')}
             </a>
           </motion.div>
         )}
