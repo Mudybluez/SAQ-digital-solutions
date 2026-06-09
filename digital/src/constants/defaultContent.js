@@ -17,6 +17,7 @@ export const defaultHomepageContentRU = {
   services: {
     tag: "Наши услуги",
     title: "Что мы строим",
+    subtitle: "Полный цикл разработки — от дизайна до поддержки. SAQ Creative Agency строит решения под конкретные цели.",
     items: [
       {
         id: 1,
@@ -115,6 +116,7 @@ export const defaultHomepageContentEN = {
   services: {
     tag: "Our Services",
     title: "What We Build",
+    subtitle: "Full cycle of development — from design to support. SAQ Creative Agency builds solutions for specific goals.",
     items: [
       {
         id: 1,
@@ -213,6 +215,7 @@ export const defaultHomepageContentKK = {
   services: {
     tag: "Қызметтеріміз",
     title: "Біз не саламыз",
+    subtitle: "Әзірлеудің толық циклі — дизайндап бастап қолдау көрсетуге дейін. SAQ Creative Agency нақты мақсаттарға арналған шешімдерді құрады.",
     items: [
       {
         id: 1,

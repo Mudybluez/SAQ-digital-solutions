@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
   const { homepageContent, theme } = useContent()
-  const { footer } = homepageContent
+  const { footer, services } = homepageContent
 
   return (
     <footer className="bg-navy border-t border-gold/10">
@@ -23,11 +25,11 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <p className="text-[11px] font-bold tracking-[3px] uppercase text-gold mb-4">Услуги</p>
+            <p className="text-[11px] font-bold tracking-[3px] uppercase text-gold mb-4">{t('footer_services')}</p>
             <ul className="space-y-3">
-              {['Разработка сайтов','Telegram-боты','Автоматизация','Web-приложения'].map(s => (
-                <li key={s}>
-                  <a href="#services" className="text-[14px] text-muted hover:text-ink transition-colors">{s}</a>
+              {services && services.items && services.items.map(s => (
+                <li key={s.id || s.title}>
+                  <a href="#services" className="text-[14px] text-muted hover:text-ink transition-colors">{s.title}</a>
                 </li>
               ))}
             </ul>
@@ -35,7 +37,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <p className="text-[11px] font-bold tracking-[3px] uppercase text-gold mb-4">Контакты</p>
+            <p className="text-[11px] font-bold tracking-[3px] uppercase text-gold mb-4">{t('footer_contacts')}</p>
             <ul className="space-y-3">
               <li><a href="https://t.me/saqdigitalsystems" target="_blank" rel="noopener" className="text-[14px] text-muted hover:text-gold transition-colors">Telegram</a></li>
               <li><a href="https://www.instagram.com/saq_digital_systems?igsh=MXZybW9oeTByZGI1Ng%3D%3D&utm_source=qr" target="_blank" rel="noopener" className="text-[14px] text-muted hover:text-gold transition-colors">Instagram</a></li>
@@ -48,7 +50,7 @@ export default function Footer() {
           <p className="text-[13px] text-muted">{footer.copyright}</p>
           <Link to="/privacy"
              className="text-[13px] text-muted/50 hover:text-muted transition-colors underline underline-offset-2">
-            Политика конфиденциальности
+            {t('footer_privacy')}
           </Link>
           <div className="flex gap-3">
             {/* Telegram */}

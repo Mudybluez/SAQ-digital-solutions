@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 export default function TechStack() {
+  const { t } = useTranslation()
   const [ref, inView] = useInView()
   const { homepageContent } = useContent()
   const { techs } = homepageContent
@@ -17,14 +19,14 @@ export default function TechStack() {
           transition={{ duration: 0.6 }}
           className="flex items-center gap-3 text-xs font-bold tracking-[4px] uppercase text-gold mb-4"
         >
-          <span className="w-8 h-px bg-gold" />Технологии
+          <span className="w-8 h-px bg-gold" />{t('tech_tag')}
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-head text-[clamp(36px,4vw,60px)] tracking-[-1px] font-[800] mb-10 text-ink"
         >
-          С чем мы работаем
+          {t('tech_title')}
         </motion.h2>
 
         <div className="flex flex-wrap gap-2">

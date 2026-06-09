@@ -2,10 +2,12 @@ import { motion } from 'framer-motion'
 import { Monitor, Bot, Zap, ArrowRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 import { useContent } from '../context/ContentContext'
+import { useTranslation } from 'react-i18next'
 
 const iconMap = [Monitor, Bot, Zap]
 
 export default function Services() {
+  const { t } = useTranslation()
   const [ref, inView] = useInView()
   const { homepageContent } = useContent()
   const { services } = homepageContent
@@ -47,8 +49,7 @@ export default function Services() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-[17px] text-muted max-w-md leading-[1.7]"
           >
-            Полный цикл разработки — от дизайна до поддержки.
-            SAQ Creative Agency строит решения под конкретные цели.
+            {services.subtitle}
           </motion.p>
         </div>
 
@@ -93,7 +94,7 @@ export default function Services() {
 
                 {/* Arrow */}
                 <div className="flex items-center gap-2 text-xs font-semibold tracking-[2px] uppercase text-muted group-hover:text-gold transition-colors duration-200">
-                  Подробнее
+                  {t('services_more')}
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </div>
               </motion.div>

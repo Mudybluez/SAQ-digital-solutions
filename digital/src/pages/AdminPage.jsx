@@ -117,6 +117,7 @@ export default function AdminPage() {
   const [isProjectFormOpen, setIsProjectFormOpen] = useState(false)
   const [projectFormError, setProjectFormError] = useState('')
   const [projectFormSuccess, setProjectFormSuccess] = useState('')
+  const [showTranslateConfirm, setShowTranslateConfirm] = useState(false)
 
   // Check login on load
   useEffect(() => {
@@ -318,29 +319,29 @@ export default function AdminPage() {
     setProjectFormSuccess('')
 
     try {
-      // Gather active lang fields to translate
+      // Gather Russian fields to translate (Russian fields are the base fields of editingProject)
       const sourceFields = {
-        title: getProjectFieldValue('title'),
-        description: getProjectFieldValue('description'),
-        category: getProjectFieldValue('category'),
-        overview: getProjectFieldValue('overview'),
-        challenge: getProjectFieldValue('challenge'),
-        solution: getProjectFieldValue('solution'),
-        results_title: getProjectFieldValue('results_title'),
-        solution_points: (getProjectFieldValue('solution_points') || '').split('\n').filter(Boolean),
-        results: (getProjectFieldValue('results') || '').split('\n').map(line => {
+        title: editingProject.title || '',
+        description: editingProject.description || '',
+        category: editingProject.category || 'Web App',
+        overview: editingProject.overview || '',
+        challenge: editingProject.challenge || '',
+        solution: editingProject.solution || '',
+        results_title: editingProject.results_title || 'Результаты',
+        solution_points: (editingProject.solution_points || '').split('\n').filter(Boolean),
+        results: (editingProject.results || '').split('\n').map(line => {
           const parts = line.split('=')
           return { num: parts[0]?.trim() || '', lbl: parts[1]?.trim() || '' }
         }).filter(r => r.lbl),
         facts: {
-          'Тип': getProjectFieldValue('facts_type'),
-          'AI-движок': getProjectFieldValue('facts_engine'),
-          'Технологии': getProjectFieldValue('facts_tech'),
-          'Архитектура': getProjectFieldValue('facts_arch')
+          'Тип': editingProject.facts_type || '',
+          'AI-движок': editingProject.facts_engine || '',
+          'Технологии': editingProject.facts_tech || '',
+          'Архитектура': editingProject.facts_arch || ''
         }
       }
 
-      const targetLangs = ['en', 'kk'].filter(l => l !== cmsLang)
+      const targetLangs = ['en', 'kk']
       const newTranslations = { ...(editingProject.translations || {}) }
 
       for (const targetLang of targetLangs) {
@@ -349,7 +350,7 @@ export default function AdminPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             fields: sourceFields,
-            from: cmsLang,
+            from: 'ru',
             to: targetLang
           })
         })
@@ -840,7 +841,7 @@ export default function AdminPage() {
 
                     <button
                       type="button"
-                      onClick={handleAutoTranslate}
+                      onClick={() => setShowTranslateConfirm(true)}
                       disabled={translating}
                       className="bg-navy border border-gold/30 hover:border-gold text-gold hover:bg-gold/5 px-4 py-2 font-head font-[800] text-xs uppercase tracking-[1.5px] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
@@ -1030,6 +1031,45 @@ export default function AdminPage() {
                       </button>
                     </div>
                   </form>
+
+                  {/* Translate Confirmation Modal */}
+                  {showTranslateConfirm && (
+                    <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                      <div className="w-full max-w-[500px] bg-navy-2 border border-gold/30 p-6 md:p-8 rounded-none shadow-2xl relative">
+                        <h3 className="font-head font-[800] text-xl text-gold mb-4 uppercase tracking-[1px]">
+                          Подтверждение автоперевода
+                        </h3>
+                        <div className="space-y-4 text-sm text-ink/90 leading-relaxed mb-6">
+                          <p className="font-semibold text-gold">Важная инструкция:</p>
+                          <ol className="list-decimal pl-5 space-y-2 text-muted">
+                            <li>Сначала заполните все поля кейса на <strong>Русском языке</strong> во вкладке «Русский».</li>
+                            <li>Убедитесь, что вы ввели или сохранили актуальные данные в полях «Название», «Описание», «Обзор», «Проблема», «Решение», «Характеристики» и т.д.</li>
+                            <li>При нажатии кнопки «Перевести» система автоматически переведет эти тексты на <strong>English</strong> и <strong>Қазақша</strong> с помощью Google Translate.</li>
+                            <li className="text-red-400">Внимание: это действие перезапишет все текущие переводы во вкладках EN и KK.</li>
+                          </ol>
+                        </div>
+                        <div className="flex justify-end gap-3 border-t border-white/5 pt-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowTranslateConfirm(false)}
+                            className="px-5 py-2.5 border border-white/10 hover:border-gold/30 text-muted hover:text-ink text-xs uppercase tracking-[1.5px] transition-colors cursor-pointer"
+                          >
+                            Отмена
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowTranslateConfirm(false)
+                              handleAutoTranslate()
+                            }}
+                            className="bg-gold hover:bg-gold-glow text-navy px-5 py-2.5 font-head font-[800] text-xs uppercase tracking-[1.5px] transition-colors cursor-pointer"
+                          >
+                            Перевести
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1184,6 +1224,11 @@ export default function AdminPage() {
                         <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Заголовок секции</label>
                         <input type="text" value={homeForm.services.title} onChange={e => setHomeForm({ ...homeForm, services: { ...homeForm.services, title: e.target.value } })} className="w-full bg-navy border border-white/10 px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-gold" />
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-muted uppercase tracking-[1.5px] mb-1.5">Подзаголовок секции (Subtitle)</label>
+                      <textarea value={homeForm.services.subtitle || ''} onChange={e => setHomeForm({ ...homeForm, services: { ...homeForm.services, subtitle: e.target.value } })} rows={2} className="w-full bg-navy border border-white/10 p-4 text-sm text-ink focus:outline-none focus:border-gold" />
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-white/5">
